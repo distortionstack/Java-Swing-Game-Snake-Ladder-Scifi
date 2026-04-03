@@ -2,6 +2,10 @@ package com.distortionstack.snakeladder.include.asset.game;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.ImageIcon;
 
 import com.distortionstack.snakeladder.include.AssetManager;
@@ -9,88 +13,39 @@ import com.distortionstack.snakeladder.include.config.GameLogical;
 
 
 public class GameAsset {
-    //
-    private static String slash = AssetManager.getSlash();
-    private static String UserDir = AssetManager.getUserDir();
-    //String Path
-    int skinamount;
-    //Asset File Object
-    private ImageIcon arrow_up;
-    private ImageIcon arrow_down;
-    private ImageIcon [] playerSkin;
-    private ImageIcon Gamebackground;
-    private ImageIcon Menubackground;
-    private ImageIcon BasediceButtonIcon;
-    private ImageIcon diceButtonUnBlock;
-    private ImageIcon diceButtonBlcoked;
-    public ImageIcon ufoDown;
-    public ImageIcon ufoUp;
-    public GameAsset(){
-        skinamount = GameLogical.SKINCODE_ARRAY.length;
-        playerSkin = new ImageIcon[skinamount];
-        
-        Menubackground = ImageIconLoader("bg_image.png");
-        Gamebackground = ImageIconLoader("newmap.png");
+    // เก็บ Asset ทั่วไป
+    private Map<GameAssetKey, ImageIcon> generalAssets = new EnumMap<>(GameAssetKey.class);
+    // เก็บสกินผู้เล่น โดยใช้สีเป็น Key เช่น "blue", "red"
+    private Map<String, ImageIcon> playerSkins = new HashMap<>();
 
-        arrow_up = ImageIconLoader( "up.gif");
-        arrow_down = ImageIconLoader( "down.gif");
+    public GameAsset() {
+        // โหลด Asset ทั่วไป
+        generalAssets.put(GameAssetKey.BG_MENU, AssetManager.getPathAndImageIconLoader("bg_image.png"));
+        generalAssets.put(GameAssetKey.BG_GAME, AssetManager.getPathAndImageIconLoader("newmap.png"));
+        generalAssets.put(GameAssetKey.ARROW_UP, AssetManager.getPathAndImageIconLoader("up.gif"));
+        generalAssets.put(GameAssetKey.ARROW_DOWN, AssetManager.getPathAndImageIconLoader("down.gif"));
+        generalAssets.put(GameAssetKey.UFO_UP, AssetManager.getPathAndImageIconLoader("UFO_UP(resize).gif"));
+        generalAssets.put(GameAssetKey.UFO_DOWN, AssetManager.getPathAndImageIconLoader("UFO_DOWN(resize).gif"));
 
-        ufoUp = ImageIconLoader("UFO_UP(resize).gif");
-        ufoDown = ImageIconLoader("UFO_DOWN(resize).gif");
+        // โหลดปุ่มเต๋าและ Crop
+        ImageIcon baseDice = AssetManager.getPathAndImageIconLoader("but_dice.png");
+        generalAssets.put(GameAssetKey.DICE_BTN_NORMAL, AssetManager.cropImage(baseDice, 0, 0, 84, 87));
+        generalAssets.put(GameAssetKey.DICE_BTN_DISABLED, AssetManager.cropImage(baseDice, 84, 0, 84, 87));
 
-        if(arrow_down != null){
-            System.out.println("por tai" + arrow_down.getIconWidth());
-        }
-
-        BasediceButtonIcon = ImageIconLoader("but_dice.png");
-
-        for (int i = 0; i < skinamount; i++) {
-            playerSkin[i] = ImageIconLoader("player_" + GameLogical.SKINCODE_ARRAY[i] + ".png"); 
-        }
-
-
-        diceButtonUnBlock = AssetManager.cropImage(BasediceButtonIcon, 0, 0, 84, 87);
-        diceButtonBlcoked = AssetManager.cropImage(BasediceButtonIcon, 84, 0, 84, 87);
-    }
-    private ImageIcon ImageIconLoader(String FileName){
-        try {
-            String pathLoad = UserDir + slash +"assets" + slash + FileName;
-            System.out.println(pathLoad);
-            File file = new File(pathLoad);
-            if (!file.exists()) {
-                System.out.println("File not found: " + pathLoad);
-                return null;
-            }
-            ImageIcon icon = new ImageIcon(pathLoad);     
-            return icon;
-        } catch (Exception e) {
-            System.out.println( FileName + " : " + e.getMessage());
-            return null;
+        // โหลดสกินผู้เล่น
+        for (String color : GameLogical.SKINCODE_ARRAY) {
+            playerSkins.put(color, AssetManager.getPathAndImageIconLoader("player_" + color + ".png"));
         }
     }
-    public ImageIcon getArrow_down() {
-        return arrow_down;
+
+    // วิธีดึงใช้แค่ 2 Method พอ
+    public ImageIcon get(GameAssetKey key) {
+        return generalAssets.get(key);
     }
-    public ImageIcon getArrow_up() {
-        return arrow_up;
+
+    public ImageIcon getPlayerSkin(String color) {
+        return playerSkins.getOrDefault(color, null);
     }
-    public ImageIcon getPlayerSkin(String skin) {
-        if(Arrays.asList( GameLogical.SKINCODE_ARRAY).indexOf(skin) == -1){
-            System.out.println("Can't Find The Skin");
-        }
-        return playerSkin[Arrays.asList( GameLogical.SKINCODE_ARRAY).indexOf(skin)];
-    }
-    public ImageIcon getGameBackGround() {
-        return Gamebackground;
-    }
-    public ImageIcon getMenubackground() {
-        return Menubackground;
-    }
-    public ImageIcon getDiceButtonBlcoked() {
-        return diceButtonBlcoked;
-    }
-    public ImageIcon getDiceButtonUnBlock() {
-        return diceButtonUnBlock;
-    }
-    
 }
+    
+

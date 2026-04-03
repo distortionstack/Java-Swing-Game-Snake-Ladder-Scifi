@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<game_assets>
+    <background>background.png</background>
+    
+    <dice_list>
+        <dice>dice1.png</dice>
+        <dice>dice2.png</dice>
+        <dice>dice3.png</dice>
+        <dice>dice4.png</dice>
+        <dice>dice5.png</dice>
+        <dice>dice6.png</dice>
+    </dice_list>
+
+    <players>
+        <player color="blue">player_blue.png</player>
+        <player color="yellow">player_yellow.png</player>
+        <player color="red">player_red.png</player>
+        <player color="white">player_white.png</player>
+        <player color="green">player_green.png</player>
+        <player color="purple">player_purple.png</player>
+    </players>
+
+    <states>
+        <state_up>ufo_down.gif</state_up>
+        <state_down>ufo_up.gif</state_down>
+    </states>
+
+    <steps>
+        <step_up>up.gif</step_up>
+        <step_down>down.gif</step_down>
+    </steps>
+
+    <dice_button>
+        <normal type="crop">but_dice.png</normal>
+        <disabled>but_dice.png</disabled>
+    </dice_button>
+</game_assets>
