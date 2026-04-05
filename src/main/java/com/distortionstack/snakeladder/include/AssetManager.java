@@ -26,7 +26,7 @@ public class AssetManager {
 
     public AssetManager() {
         loadManifest("game.xml", gameAsset::put);
-        loadManifest("menu.xml", menuAsset::put);
+        //loadManifest("menu.xml", menuAsset::put);
     }
 
     // ──────────────────────────────────────────────
@@ -35,7 +35,7 @@ public class AssetManager {
 
     private void loadManifest(String xmlFileName, AssetReceiver target) {
         try {
-            URL url = getClass().getClassLoader().getResource("manifests/" + xmlFileName);
+            URL url = getClass().getResource("manifests/" + xmlFileName);
             if (url == null) {
                 System.err.println("[AssetManager] manifest not found: " + xmlFileName);
                 return;
@@ -106,9 +106,9 @@ public class AssetManager {
     // ──────────────────────────────────────────────
 
     private ImageIcon loadImageIcon(String fileName) {
-        InputStream is = getClass().getClassLoader().getResourceAsStream("images/" + fileName);
+        InputStream is = getClass().getResourceAsStream("resouces/" + fileName);
         if (is == null) {
-            System.err.println("  Missing: images/" + fileName);
+            System.err.println("  Missing: resouces/" + fileName);
             return null;
         }
         try {

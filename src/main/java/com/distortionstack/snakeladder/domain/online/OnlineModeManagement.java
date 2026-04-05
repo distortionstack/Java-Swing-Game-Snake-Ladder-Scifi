@@ -1,4 +1,4 @@
-package com.distortionstack.snakeladder.domain;
+package com.distortionstack.snakeladder.domain.online;
 public class OnlineModeManagement {
     
 }

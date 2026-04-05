@@ -11,15 +11,15 @@ import com.distortionstack.snakeladder.include.config.GameLogical;
 public abstract class GameLogicalManeger {
     //const
     
-    Point[] IndexLocation = new Point[101];
+    private Point[] IndexLocation = new Point[101];
     //var
 
     //ArrayList 
-    ArrayList <PlayerData> playerList = new ArrayList<>();
+    private ArrayList <PlayerData> playerList = new ArrayList<>();
     
-    int amount = 0;
-    int CurrentTrunIndex = 0;
-    int roll = 0;
+    private int playerAmount = 0;
+    private int CurrentTrunIndex = 0;
+    private int roll = 0;
 
     //method
     public void diceRoll(){
@@ -88,6 +88,10 @@ public abstract class GameLogicalManeger {
         return playerList.get(CurrentTrunIndex);
     }
 
+    public int getCurrentPlayerIndex() {
+        return getCurrentPlayer().getgStatus().getIndex();
+    }
+
     public void addPlayer(JButton button){
         PlayerData player = new PlayerData();
         player.setSkincode(button.getText());
@@ -96,5 +100,13 @@ public abstract class GameLogicalManeger {
     
     public ArrayList<PlayerData> getPlayerList() {
         return playerList;
+    }
+
+    public int getPlayerAmount() {
+        return playerAmount;
+    }
+
+    public Point[] getIndexLocation() {
+        return IndexLocation;
     }
 }

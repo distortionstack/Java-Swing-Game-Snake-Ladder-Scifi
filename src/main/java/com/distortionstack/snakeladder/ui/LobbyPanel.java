@@ -14,11 +14,11 @@ import javax.swing.JPanel;
 
 public abstract class LobbyPanel extends JPanel {
     JButton [] selectSkinButton = new JButton[GameLogical.SKINCODE_ARRAY_LENGTH];
-    JPanel selectSkinPanel;
-    JLabel LobbyLabel;
-    JPanel operationPanel;
+    protected JPanel selectSkinPanel;
+    protected JLabel LobbyLabel;
+    protected JPanel operationPanel;
     AssetManager assetManager;
-    public LobbyPanel(AssetManager assetManager){
+    public LobbyPanel(AssetManager assetManager,DisplayController displayController){
         this.assetManager = assetManager;
         
         for (int i = 0; i < selectSkinButton.length; i++) {

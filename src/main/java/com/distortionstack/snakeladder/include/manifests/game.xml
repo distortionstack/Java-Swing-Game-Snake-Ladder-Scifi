@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <assets namespace="game">
 
-    <image key="background" file="background.png"/>
-
-    <group key="dice">
-        <image key="1" file="dice1.png"/>
-        <image key="2" file="dice2.png"/>
-        <image key="3" file="dice3.png"/>
-        <image key="4" file="dice4.png"/>
-        <image key="5" file="dice5.png"/>
-        <image key="6" file="dice6.png"/>
-    </group>
+    <image key="background" file="newmap.png"/>
 
     <group key="player">
         <image key="blue"   file="player_blue.png"/>
@@ -32,8 +23,8 @@
     </group>
 
     <group key="dice_button">
-        <crop key="normal"   file="but_dice.png" x="0"  y="0"  width="100" height="50"/>
-        <crop key="disabled" file="but_dice.png" x="0"  y="50" width="100" height="50"/>
+        <crop key="normal"   file="but_dice.png" x="0"  y="0"  width="84" height="87"/>
+        <crop key="disabled" file="but_dice.png" x="84"  y="0" width="84" height="87"/>
     </group>
 
 </assets>

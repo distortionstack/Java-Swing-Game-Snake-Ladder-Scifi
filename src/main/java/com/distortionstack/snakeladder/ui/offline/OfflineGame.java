@@ -10,17 +10,18 @@ import javax.swing.ImageIcon;
 
 import java.util.List;
 
-import com.distortionstack.snakeladder.domain.GameLogicalManeger;
 import com.distortionstack.snakeladder.domain.PlayerData;
+import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManeger;
 import com.distortionstack.snakeladder.include.AssetManager;
 import com.distortionstack.snakeladder.include.config.GameUI;
+import com.distortionstack.snakeladder.ui.DisplayController;
 import com.distortionstack.snakeladder.ui.GamePanel;
 
 public class OfflineGame extends GamePanel {
-    GameLogicalManeger logical;
+    OfflineGameLogicalManeger logical;
 
-    OfflineGame(AssetManager assetManager, GameLogicalManeger logical) {
-        super(assetManager);
+    public OfflineGame(AssetManager assetManager, OfflineGameLogicalManeger logical,DisplayController displayController) {
+        super(assetManager,displayController);
         this.logical = logical;
     }
 

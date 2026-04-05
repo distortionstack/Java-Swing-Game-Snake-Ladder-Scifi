@@ -1,50 +1,60 @@
-package com.distortionstack.snakeladder.domain;
+package com.distortionstack.snakeladder.ui;
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Font;
-import java.awt.Graphics;
 
 import javax.swing.BorderFactory;
 
 import com.distortionstack.snakeladder.include.AssetManager;
 
 public class MenuPanel extends JPanel {
-    String[] TextOnButton = {"Offline Mode", "Setting", "Quit"};
-    JButton[] MenuButton = new JButton[TextOnButton.length];
+    ButtonAction[] menuButton;
     JPanel menuBar;
-    
+
     JLabel titleLabel;
     JPanel contentPanel;
-    AssetManager assetManager; 
+    AssetManager assetManager;
+    DisplayController displayController;
 
-    public MenuPanel(AssetManager assetManager) {
+    public MenuPanel(AssetManager assetManager,DisplayController displayController) {
         this.assetManager = assetManager;
+        menuBar = new JPanel();
+        this.displayController = displayController;
+            
+        menuButton = new ButtonAction[] {
+            new ButtonAction("Offline Mode", new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    displayController.startOfflineGame();
+                }
+            }),
+            new ButtonAction("Quit", new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    displayController.quit();
+                }
+            })
+        };
 
-        for (int i = 0; i < TextOnButton.length; i++) {
-            MenuButton[i] = new JButton(TextOnButton[i]);
+        for (int i = 0; i < menuButton.length; i++) {
+            menuBar.add(menuButton[i].getButton());
         }
 
-        menuBar = new JPanel() {{
-            setLayout(new GridLayout(TextOnButton.length, 1, 0, 10)); 
-            for (int i = 0; i < TextOnButton.length; i++) {
-                add(MenuButton[i]);
-            }
-        }};
+        menuBar.setLayout(new GridLayout(menuButton.length, 1, 0, 10));
+        titleLabel = new JLabel("My Snake Game");
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 36)); 
+            titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        titleLabel = new JLabel("My Snake Game"){{
-            setFont(new Font("Arial", Font.BOLD, 36)); 
-            setHorizontalAlignment(SwingConstants.CENTER);
-        }};
-
-        contentPanel = new JPanel(new BorderLayout(0, 20)){{
-            add(titleLabel, BorderLayout.NORTH);
-            add(menuBar, BorderLayout.CENTER);  
-        }}; 
+        contentPanel = new JPanel(new BorderLayout(0, 20));
+            contentPanel.add(titleLabel, BorderLayout.NORTH);
+            contentPanel.add(menuBar, BorderLayout.CENTER);  
         
 
         setLayout(new GridLayout(1, 3)); 
@@ -55,20 +65,10 @@ public class MenuPanel extends JPanel {
         add(new JPanel());     
     }
 
-    public void addMenuActionListener(String MenuName, ActionListener listener) {
-        for (int i = 0; i < MenuButton.length; i++) {
-            if (MenuButton[i].getText().equals(MenuName)) {
-                MenuButton[i].addActionListener(listener);
-                break;
-            }
-        }
-    }
-
-    public JButton[] getMenuButton() {
-        return MenuButton;
+    public ButtonAction[] getMenuButton() {
+        return menuButton;
     }
 }
-
 
 class SettingPanel extends JPanel {
 

@@ -1,4 +1,4 @@
-package com.distortionstack.snakeladder.include.asset.menu;
+package com.distortionstack.snakeladder.include.assets.menu;
 
 import java.util.HashMap;
 import java.util.Map;

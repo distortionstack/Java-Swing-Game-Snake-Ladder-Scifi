@@ -32,7 +32,7 @@ public class GamePanel extends JPanel {
     protected JLabel[] upJLabels   = new JLabel[GameLogical.LADDERS_UP.length];
     protected JLabel[] downJLabels = new JLabel[GameLogical.SNAKES_DOWN.length];
 
-    public GamePanel(AssetManager assetManager) {
+    public GamePanel(AssetManager assetManager,DisplayController displayController) {
         this.assetManager = assetManager;
         bgImageIcon = assetManager.getGameAsset().getGameBackGround();
 
