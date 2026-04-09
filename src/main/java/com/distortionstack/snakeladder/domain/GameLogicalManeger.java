@@ -92,9 +92,9 @@ public abstract class GameLogicalManeger {
         return getCurrentPlayer().getgStatus().getIndex();
     }
 
-    public void addPlayer(JButton button){
+    public void addPlayer(String skinCode){
         PlayerData player = new PlayerData();
-        player.setSkincode(button.getText());
+        player.setSkincode(skinCode);
         playerList.add(player);
     }
     

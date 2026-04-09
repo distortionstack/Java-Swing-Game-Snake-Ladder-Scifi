@@ -2,6 +2,7 @@ package com.distortionstack.snakeladder.ui.offline;
 
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,10 +18,10 @@ import com.distortionstack.snakeladder.include.config.GameUI;
 import com.distortionstack.snakeladder.ui.DisplayController;
 import com.distortionstack.snakeladder.ui.GamePanel;
 
-public class OfflineGame extends GamePanel {
+public class OfflineGamePanel extends GamePanel {
     OfflineGameLogicalManeger logical;
 
-    public OfflineGame(AssetManager assetManager, OfflineGameLogicalManeger logical,DisplayController displayController) {
+    public OfflineGamePanel(AssetManager assetManager, OfflineGameLogicalManeger logical,DisplayController displayController) {
         super(assetManager,displayController);
         this.logical = logical;
     }
@@ -28,6 +29,10 @@ public class OfflineGame extends GamePanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
+        if (logical == null) {
+            return; 
+        }
 
         ArrayList<PlayerData> pArrayList = logical.getPlayerList();
 
@@ -69,6 +74,10 @@ public class OfflineGame extends GamePanel {
                 }
             }
         }
+    }
+
+    public void addDiceButtonListener(ActionListener listener){
+        diceButton.addActionListener(listener);
     }
 
     // ฟังก์ชันช่วยคำนวณตำแหน่ง (Pattern หน้าลูกเต๋า)

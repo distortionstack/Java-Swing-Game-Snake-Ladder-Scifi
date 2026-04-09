@@ -18,8 +18,8 @@
     </group>
 
     <group key="arrow">
-        <image key="up"   file="up.gif"   scale_w="40" scale_h="40"/>
-        <image key="down" file="down.gif" scale_w="40" scale_h="40"/>
+        <image key="up"   file="up_resize.gif"/>
+        <image key="down" file="down_resize.gif"/>
     </group>
 
     <group key="dice_button">

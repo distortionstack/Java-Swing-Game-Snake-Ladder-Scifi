@@ -1,16 +1,16 @@
-package com.distortionstack.snakeladder.domain.offline;
+package com.distortionstack.snakeladder.ui.offline;
 
 import javax.swing.JFrame;
 
-import com.distortionstack.snakeladder.domain.AnimationThread;
 import com.distortionstack.snakeladder.domain.GameStatus;
 import com.distortionstack.snakeladder.domain.PlayerData;
-import com.distortionstack.snakeladder.ui.GamePanel;
+import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManeger;
+import com.distortionstack.snakeladder.ui.AnimationThread;
 
 class OfflineAnimationThread extends AnimationThread{
     OfflineGameLogicalManeger gameLogical;
-    OfflineAnimationThread(PlayerData playerData , GamePanel gamePanel , OfflineGameLogicalManeger gameLogical){
-        super(playerData, gamePanel);
+    OfflineAnimationThread(PlayerData playerData , OfflineGamePanel offlineGamePanel , OfflineGameLogicalManeger gameLogical){
+        super(playerData, offlineGamePanel);
         this.gameLogical = gameLogical;
         start();
     }

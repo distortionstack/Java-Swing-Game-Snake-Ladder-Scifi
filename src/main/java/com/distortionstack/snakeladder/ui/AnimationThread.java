@@ -1,5 +1,6 @@
-package com.distortionstack.snakeladder.domain;
-import com.distortionstack.snakeladder.ui.GamePanel;
+package com.distortionstack.snakeladder.ui;
+import com.distortionstack.snakeladder.domain.GameLogicalManeger;
+import com.distortionstack.snakeladder.domain.PlayerData;
 
 public abstract class AnimationThread extends Thread{
     protected PlayerData playerData;

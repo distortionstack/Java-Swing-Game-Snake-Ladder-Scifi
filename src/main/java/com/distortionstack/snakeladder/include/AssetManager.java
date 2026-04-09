@@ -26,7 +26,7 @@ public class AssetManager {
 
     public AssetManager() {
         loadManifest("game.xml", gameAsset::put);
-        //loadManifest("menu.xml", menuAsset::put);
+        loadManifest("menu.xml", menuAsset::put);
     }
 
     // ──────────────────────────────────────────────
@@ -78,6 +78,15 @@ public class AssetManager {
                 case "image": {
                     ImageIcon icon = loadImageIcon(child.getAttribute("file"));
                     // scale ถ้ามี attribute
+                    String rw = child.getAttribute("render_w");
+                    String rh = child.getAttribute("render_h");
+
+                    // ถ้ามีค่า render ให้เก็บไว้ใน Description ของ ImageIcon
+                    // เพื่อให้เรียกใช้ได้ง่ายๆ ภายหลัง (ไม่ต้องสร้างตัวแปรใหม่ให้วุ่นวาย)
+                    if (!rw.isEmpty() && !rh.isEmpty()) {
+                        icon.setDescription(rw + "," + rh); 
+                    }
+
                     icon = applyScale(icon, child);
                     target.put(newPath, icon);
                     System.out.println("  Loaded : " + newPath);
@@ -104,19 +113,14 @@ public class AssetManager {
     // ──────────────────────────────────────────────
     //  Helpers
     // ──────────────────────────────────────────────
-
     private ImageIcon loadImageIcon(String fileName) {
-        InputStream is = getClass().getResourceAsStream("resouces/" + fileName);
-        if (is == null) {
+        URL url = getClass().getResource("resouces/" + fileName); // ตรวจสอบตัวสะกด resouces ด้วยนะครับ
+        if (url == null) {
             System.err.println("  Missing: resouces/" + fileName);
             return null;
         }
-        try {
-            return new ImageIcon(ImageIO.read(is));
-        } catch (IOException e) {
-            System.err.println("  Failed to read: " + fileName);
-            return null;
-        }
+        // ใช้ Constructor ที่รับ URL จะช่วยรักษา Animation GIF ไว้ได้
+        return new ImageIcon(url);
     }
 
     // อ่าน scale_w / scale_h จาก element ถ้าไม่มีคืน icon เดิม

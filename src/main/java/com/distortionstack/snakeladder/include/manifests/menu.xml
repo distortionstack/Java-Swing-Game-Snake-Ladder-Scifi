@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root namespace="menu">
+    <image key="background" file="bg_image.png" scale_w="1280" scale_h="720"/>
+    
+    <group key="button">
+        <image key="start" file="btn_start.png" scale_w="200" scale_h="50"/>
+        <image key="quit" file="btn_quit.png" scale_w="200" scale_h="50"/>
+    </group>
+</root>

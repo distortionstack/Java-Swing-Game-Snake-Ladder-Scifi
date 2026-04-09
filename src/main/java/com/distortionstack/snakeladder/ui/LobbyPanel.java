@@ -38,7 +38,7 @@ public abstract class LobbyPanel extends JPanel {
         }};
 
         LobbyLabel = new JLabel(){{
-            setFont(new Font("Tohama",Font.BOLD,50));
+            setFont(new Font("Tahoma",Font.BOLD,50));
             setHorizontalAlignment(JLabel.CENTER);
             setVerticalAlignment(JLabel.CENTER);
             setText("Select Charector Room");
@@ -51,7 +51,8 @@ public abstract class LobbyPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         // TODO Auto-generated method stub
         super.paintComponent(g);
-        g.drawImage(assetManager.getGameAsset().getMenubackground().getImage(), 0, 0, this);
+        g.drawImage(assetManager.getMenuAsset().getMenuBackground().getImage(), 
+                    0, 0, getWidth(), getHeight(), this);
     }
     public JButton[] getSelectSkinButton() {
         return selectSkinButton;

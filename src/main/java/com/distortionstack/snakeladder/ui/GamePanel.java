@@ -52,7 +52,7 @@ public class GamePanel extends JPanel {
 
         setLayout(null);
         setPreferredSize(DisplayUI.WINDOW_SIZE);
-        PositionSetUP();
+        positionSetUp();
         add(diceButton);
     }
 
@@ -60,7 +60,7 @@ public class GamePanel extends JPanel {
         diceButton.addActionListener(listener);
     }
 
-    public void PositionSetUP() {
+    public void positionSetUp() {
         onePlayerPoint[0] = GameUI.START_POINT_ONE_PLAYER;
         onePlayerPoint[1] = new Point(420, 570);
 
@@ -90,19 +90,33 @@ public class GamePanel extends JPanel {
             int tileIndex = GameLogical.LADDERS_UP[i][0];
             if (tileIndex < onePlayerPoint.length && onePlayerPoint[tileIndex] != null) {
                 Point p = onePlayerPoint[tileIndex];
-                upJLabels[i].setBounds(
-                    p.x - Tunner,
-                    p.y - Tunner - (tileIndex / 12 - 1),
-                    GameUI.LADDER_AND_SNAKES_CELL_SIZE.width,
-                    GameUI.LADDER_AND_SNAKES_CELL_SIZE.height
-                );
-                upJLabels[i].setBorder(javax.swing.BorderFactory.createLineBorder(Color.RED, 2));
+
+                if (upJLabels[i] == null) {
+                    upJLabels[i] = new JLabel();
+                }
+
+                if (arrowUp != null) {
+                    // ใส่รูปที่ย่อมาแล้วลงไปตรงๆ ได้เลย
+                    upJLabels[i].setIcon(arrowUp);
+                    
+                    // ดึงขนาดความกว้าง/สูง จากตัวไฟล์รูปจริงๆ
+                    int imgW = arrowUp.getIconWidth();
+                    int imgH = arrowUp.getIconHeight();
+                    
+                    int cellW = GameUI.LADDER_AND_SNAKES_CELL_SIZE.width;
+                    int cellH = GameUI.LADDER_AND_SNAKES_CELL_SIZE.height;
+
+                    // คำนวณตำแหน่งให้ภาพอยู่กึ่งกลางช่องพอดี
+                    int offsetX = (cellW - imgW) / 2;
+                    int offsetY = (cellH - imgH) / 2;
+                    int baseX = p.x - Tunner;
+                    int baseY = p.y - Tunner - (tileIndex / 12 - 1);
+
+                    upJLabels[i].setBounds(baseX + offsetX, baseY + offsetY, imgW, imgH);
+                }
+                
                 add(upJLabels[i]);
             }
-            if (arrowUp != null)
-                upJLabels[i].setIcon(AssetManager.scaleImage(arrowUp,
-                    GameUI.LADDER_AND_SNAKES_CELL_SIZE.width,
-                    GameUI.LADDER_AND_SNAKES_CELL_SIZE.height));
         }
 
         // ── Snake Down ──
@@ -111,28 +125,43 @@ public class GamePanel extends JPanel {
             int tileIndex = GameLogical.SNAKES_DOWN[i][0];
             if (tileIndex < onePlayerPoint.length && onePlayerPoint[tileIndex] != null) {
                 Point p = onePlayerPoint[tileIndex];
-                downJLabels[i].setBounds(
-                    p.x - Tunner,
-                    p.y - Tunner - (tileIndex / 12 - 1),
-                    GameUI.LADDER_AND_SNAKES_CELL_SIZE.width,
-                    GameUI.LADDER_AND_SNAKES_CELL_SIZE.height
-                );
-                downJLabels[i].setBorder(javax.swing.BorderFactory.createLineBorder(Color.BLUE, 2));
+
+                if (downJLabels[i] == null) {
+                    downJLabels[i] = new JLabel();
+                }
+
+                if (arrowDown != null) {
+                    // ใส่รูปที่ย่อมาแล้วลงไปตรงๆ ได้เลย
+                    downJLabels[i].setIcon(arrowDown);
+                    
+                    // ดึงขนาดความกว้าง/สูง จากตัวไฟล์รูปจริงๆ
+                    int imgW = arrowDown.getIconWidth();
+                    int imgH = arrowDown.getIconHeight();
+                    
+                    int cellW = GameUI.LADDER_AND_SNAKES_CELL_SIZE.width;
+                    int cellH = GameUI.LADDER_AND_SNAKES_CELL_SIZE.height;
+
+                    // คำนวณตำแหน่งให้ภาพอยู่กึ่งกลางช่องพอดี
+                    int offsetX = (cellW - imgW) / 2;
+                    int offsetY = (cellH - imgH) / 2;
+                    int baseX = p.x - Tunner;
+                    int baseY = p.y - Tunner - (tileIndex / 12 - 1);
+
+                    downJLabels[i].setBounds(baseX + offsetX, baseY + offsetY, imgW, imgH);
+                }
+                
                 add(downJLabels[i]);
             }
-            if (arrowDown != null)
-                downJLabels[i].setIcon(AssetManager.scaleImage(arrowDown,
-                    GameUI.LADDER_AND_SNAKES_CELL_SIZE.width,
-                    GameUI.LADDER_AND_SNAKES_CELL_SIZE.height));
         }
 
         System.out.println("=== position check ===");
-        for (int i = 1; i <= 10; i++)
-            System.out.println("ช่อง " + i + ": " + onePlayerPoint[i]);
-        System.out.println("ช่อง 100: " + onePlayerPoint[100]);
+        for (int i = 1; i <= 10; i++){
+                System.out.println("ช่อง " + i + ": " + onePlayerPoint[i]);
+            System.out.println("ช่อง 100: " + onePlayerPoint[100]);
 
-        repaint();
-        revalidate();
+            repaint();
+            revalidate();
+        }
     }
 
     public void drawPlayer(Graphics g, ArrayList<PlayerData> playerList) {
@@ -160,7 +189,7 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (bgImageIcon != null)
-            g.drawImage(bgImageIcon.getImage(), 0, 0, this);
+           g.drawImage(bgImageIcon.getImage(), 0, 0, getWidth(), getHeight(), this);
 
         if (!debugmode) return;
 
