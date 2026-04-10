@@ -32,4 +32,7 @@ public class GameAsset {
     // ── Dice button ──
     public ImageIcon getDiceButtonUnBlock() { return map.get("game.dice_button.normal"); }
     public ImageIcon getDiceButtonBlcoked() { return map.get("game.dice_button.disabled"); }
+
+    // ── Dice roll animation frames (1-6) ──
+    public ImageIcon getDiceSheet(int face) { return map.get("game.dice." + face); }
 }

@@ -27,4 +27,13 @@
         <crop key="disabled" file="but_dice.png" x="84"  y="0" width="84" height="87"/>
     </group>
 
+    <group key="dice">
+        <image key="1" file="dice/1.png"/>
+        <image key="2" file="dice/2.png"/>
+        <image key="3" file="dice/3.png"/>
+        <image key="4" file="dice/4.png"/>
+        <image key="5" file="dice/5.png"/>
+        <image key="6" file="dice/6.png"/>
+    </group>
+
 </assets>
