@@ -81,9 +81,9 @@ public class GamePanel extends JPanel {
         onePlayerPoint[0] = GameUI.START_POINT_ONE_PLAYER;
         onePlayerPoint[1] = new Point(420, 570);
 
-        int cellWidth = 56;
-        int cellHeight = 58;
-        int Tunner = 14;
+        int cellWidth = GameUI.CELL_WIDTH_PX;
+        int cellHeight = GameUI.CELL_HEIGHT_PX;
+        int Tunner = GameUI.CELL_OFFSET_ADJUSTMENT_X;
 
         for (int i = 2; i < onePlayerPoint.length; i++) {
             int row = (i - 1) / 10;

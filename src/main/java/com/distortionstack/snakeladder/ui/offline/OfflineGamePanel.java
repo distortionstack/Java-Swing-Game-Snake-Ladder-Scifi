@@ -82,6 +82,9 @@ public class OfflineGamePanel extends GamePanel {
 
     // ฟังก์ชันช่วยคำนวณตำแหน่ง (Pattern หน้าลูกเต๋า)
     private Point getDiceOffset(int totalPlayers, int playerIndex) {
+        if (totalPlayers <= 0 || playerIndex < 0 || playerIndex >= totalPlayers) {
+            return new Point(0, 0);  // default safe value
+        }
         // ถ้าคนเยอะเกิน 6 คน ให้เรียงแบบหน้า 6 ไปเรื่อยๆ หรือซ้อนกัน
         if (totalPlayers > 6)
             totalPlayers = 6;
