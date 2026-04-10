@@ -51,6 +51,8 @@ public class AssetManager {
             System.out.println("[AssetManager] " + xmlFileName + " done.");
         } catch (Exception e) {
             System.err.println("[AssetManager] Failed: " + xmlFileName + " → " + e.getMessage());
+            e.printStackTrace(); // เพิ่ม stack trace เพื่อช่วย debug
+            throw new RuntimeException("Failed to load asset manifest: " + xmlFileName, e);
         }
     }
 

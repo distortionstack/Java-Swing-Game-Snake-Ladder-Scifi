@@ -1,9 +1,11 @@
 package com.distortionstack.snakeladder.domain.online;
+import com.distortionstack.snakeladder.domain.GameLogicalManeger;
+
 public class OnlineModeManagement {
     
 }
 
-class GameServer extends GameLogicalProsessor{
+class GameServer extends GameLogicalManeger{
     GameServer(){
 
     }

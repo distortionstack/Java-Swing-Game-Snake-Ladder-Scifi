@@ -36,7 +36,7 @@ class OfflineAnimationThread extends AnimationThread {
             if (currentVisual == targetIndex) {
 
                 // 2. เช็คดูซิว่า ตรงนี้มี งู หรือ บันได ไหม?
-                boolean needWarp = gameLogical.CheckLadderAndCSnakes();
+                boolean needWarp = gameLogical.CheckLadderAndSnakes();
 
                 if (needWarp) {
                     // ถ้าเจอ: ให้หน่วงเวลา + วาร์ป
@@ -53,7 +53,9 @@ class OfflineAnimationThread extends AnimationThread {
                         gamePanel.repaint();
 
                     } catch (InterruptedException e) {
+                        System.out.println("Warp Animation Interrupted: " + e.getMessage());
                         e.printStackTrace();
+                        Thread.currentThread().interrupt(); // restore interrupt status
                     }
                 }
 

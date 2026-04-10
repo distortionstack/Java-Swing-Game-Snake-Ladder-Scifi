@@ -9,26 +9,26 @@ import javax.swing.JButton;
 import com.distortionstack.snakeladder.include.config.GameLogical;
 
 public abstract class GameLogicalManeger {
-    //const
-    
-    private Point[] IndexLocation = new Point[101];
-    //var
+    // const
 
-    //ArrayList 
-    private ArrayList <PlayerData> playerList = new ArrayList<>();
-    
+    private Point[] IndexLocation = new Point[101];
+    // var
+
+    // ArrayList
+    private ArrayList<PlayerData> playerList = new ArrayList<>();
+
     private int playerAmount = 0;
     private int CurrentTrunIndex = 0;
     private int roll = 0;
 
-    //method
-    public void diceRoll(){
-        roll = new Random().nextInt(6)+1;
+    // method
+    public void diceRoll() {
+        roll = new Random().nextInt(6) + 1;
     }
 
-    public void updateIndex(){
+    public void updateIndex() {
         GameStatus gameStatus = playerList.get(CurrentTrunIndex).getgStatus();
-        if(gameStatus.getIndex() >= 100 || - gameStatus.getIndex() + getDiceRollValue() >= 100){
+        if (gameStatus.getIndex() >= 100 || -gameStatus.getIndex() + getDiceRollValue() >= 100) {
             System.out.println("You Win");
             gameStatus.setIndex(100);
             return;
@@ -37,48 +37,43 @@ public abstract class GameLogicalManeger {
         gameStatus.setIndex(gameStatus.getIndex() + getDiceRollValue());
     }
 
-    public void NextTurn(){
+    public void NextTurn() {
         CurrentTrunIndex++;
-        if(CurrentTrunIndex >= playerList.size()){
+        if (CurrentTrunIndex >= playerList.size()) {
             CurrentTrunIndex = 0;
         }
     }
 
-   // 2. แก้ CheckLadderAndCSnakes ให้คืนค่า boolean (True = เจอ, False = ไม่เจอ)
-    public boolean CheckLadderAndCSnakes(){
-        if (playerList == null || playerList.isEmpty()) return false;
-
+    private boolean checkAndApplyWarp(int[][] warpMap, String warpType) {
         GameStatus gameStatus = playerList.get(CurrentTrunIndex).getgStatus();
-        boolean found = false;
 
-        // เช็คบันได (Ladders)
-        for (int[] jumpindex : GameLogical.LADDERS_UP) {
-            if(gameStatus.getIndex() == jumpindex[0]){
-                gameStatus.setIndex(jumpindex[1]); // อัปเดตเป้าหมายใหม่
-                found = true;
-                System.out.println("Found Ladder! Will Warp to " + jumpindex[1]);
-                break;
+        for (int[] warp : warpMap) {
+            if (gameStatus.getIndex() == warp[0]) {
+                int newIndex = warp[1];
+                gameStatus.setIndex(newIndex);
+                System.out.println("Found " + warpType + "! Will Warp to " + newIndex);
+                return true;
             }
         }
-        
-        // เช็คงู (Snakes) - ถ้ายังไม่เจอบันไดค่อยเช็ค
-        if(!found) { 
-            for (int[] jumpindex : GameLogical.SNAKES_DOWN) {
-                if(gameStatus.getIndex() == jumpindex[0]){
-                    gameStatus.setIndex(jumpindex[1]); // อัปเดตเป้าหมายใหม่
-                    found = true;
-                    System.out.println("Found Snake! Will Warp to " + jumpindex[1]);
-                    break;
-                }
-            }
-        }
-        
-        return found; // ส่งผลลัพธ์กลับไปบอก Thread
+        return false;
     }
 
-    //-getter
-    public int getDiceRollValue(){
-        if(roll == 0){
+    public boolean CheckLadderAndSnakes() {
+        if (playerList == null || playerList.isEmpty())
+            return false;
+
+        // Check ladders first
+        if (checkAndApplyWarp(GameLogical.LADDERS_UP, "Ladder")) {
+            return true;
+        }
+
+        // Then check snakes
+        return checkAndApplyWarp(GameLogical.SNAKES_DOWN, "Snake");
+    }
+
+    // -getter
+    public int getDiceRollValue() {
+        if (roll == 0) {
             diceRoll();
         }
         return roll;
@@ -92,12 +87,12 @@ public abstract class GameLogicalManeger {
         return getCurrentPlayer().getgStatus().getIndex();
     }
 
-    public void addPlayer(String skinCode){
+    public void addPlayer(String skinCode) {
         PlayerData player = new PlayerData();
         player.setSkincode(skinCode);
         playerList.add(player);
     }
-    
+
     public ArrayList<PlayerData> getPlayerList() {
         return playerList;
     }
