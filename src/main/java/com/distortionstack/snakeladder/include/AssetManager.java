@@ -1,13 +1,9 @@
 package com.distortionstack.snakeladder.include;
 
-import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URL;
-
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,139 +25,100 @@ public class AssetManager {
         loadManifest("menu.xml", menuAsset::put);
     }
 
-    // ──────────────────────────────────────────────
-    //  โหลด XML
-    // ──────────────────────────────────────────────
-
     private void loadManifest(String xmlFileName, AssetReceiver target) {
         try {
-            URL url = getClass().getResource("manifests/" + xmlFileName);
-            if (url == null) {
-                System.err.println("[AssetManager] manifest not found: " + xmlFileName);
+            InputStream is = null;
+
+            // ท่าไม้ตาย: อ่านไฟล์ตรงๆ จากโฟลเดอร์ src เลย ไม่ง้อ IDE!
+            File directFile = new File("src/main/resources/manifests/" + xmlFileName);
+            if (directFile.exists()) {
+                is = new FileInputStream(directFile);
+                System.out.println("[AssetManager] ✅ load XML bypass IDE found: " + directFile.getAbsolutePath());
+            } else {
+                // เผื่อฟลุคอยู่ใน Classpath
+                is = getClass().getClassLoader().getResourceAsStream("manifests/" + xmlFileName);
+            }
+
+            if (is == null) {
+                System.err.println("[AssetManager] ❌ didn't find XML: " + xmlFileName);
                 return;
             }
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = builder.parse(url.toString());
+
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(is);
             doc.getDocumentElement().normalize();
 
-            Element root = doc.getDocumentElement();
-            String namespace = root.getAttribute("namespace");
+            String namespace = doc.getDocumentElement().getAttribute("namespace");
+            NodeList nList = doc.getDocumentElement().getChildNodes();
 
-            parseElement(root, namespace, target);
-            System.out.println("[AssetManager] " + xmlFileName + " done.");
+            for (int i = 0; i < nList.getLength(); i++) {
+                Node node = nList.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    parseElement((Element) node, namespace, "", target);
+                }
+            }
         } catch (Exception e) {
-            System.err.println("[AssetManager] Failed: " + xmlFileName + " → " + e.getMessage());
-            e.printStackTrace(); // เพิ่ม stack trace เพื่อช่วย debug
-            throw new RuntimeException("Failed to load asset manifest: " + xmlFileName, e);
+            System.err.println("[AssetManager] ❌ Error loading manifest: " + xmlFileName);
+            e.printStackTrace();
         }
     }
 
-    // ──────────────────────────────────────────────
-    //  Recursive parser
-    // ──────────────────────────────────────────────
+    private void parseElement(Element el, String ns, String prefix, AssetReceiver target) {
+        String tagName = el.getTagName();
+        String key = prefix + el.getAttribute("key");
+        String fullKey = ns + "." + key;
 
-    private void parseElement(Element element, String currentPath, AssetReceiver target) {
-        NodeList children = element.getChildNodes();
-
-        for (int i = 0; i < children.getLength(); i++) {
-            Node node = children.item(i);
-            if (node.getNodeType() != Node.ELEMENT_NODE) continue;
-
-            Element child  = (Element) node;
-            String tag     = child.getTagName();
-            String key     = child.getAttribute("key");
-            String newPath = currentPath.isEmpty() ? key : currentPath + "." + key;
-
-            switch (tag) {
-                case "group":
-                    parseElement(child, newPath, target);
-                    break;
-
-                case "image": {
-                    ImageIcon icon = loadImageIcon(child.getAttribute("file"));
-                    // scale ถ้ามี attribute
-                    String rw = child.getAttribute("render_w");
-                    String rh = child.getAttribute("render_h");
-
-                    // ถ้ามีค่า render ให้เก็บไว้ใน Description ของ ImageIcon
-                    // เพื่อให้เรียกใช้ได้ง่ายๆ ภายหลัง (ไม่ต้องสร้างตัวแปรใหม่ให้วุ่นวาย)
-                    if (!rw.isEmpty() && !rh.isEmpty()) {
-                        icon.setDescription(rw + "," + rh); 
-                    }
-
-                    icon = applyScale(icon, child);
-                    target.put(newPath, icon);
-                    System.out.println("  Loaded : " + newPath);
-                    break;
-                }
-
-                case "crop": {
-                    ImageIcon full = loadImageIcon(child.getAttribute("file"));
-                    int x = Integer.parseInt(child.getAttribute("x"));
-                    int y = Integer.parseInt(child.getAttribute("y"));
-                    int w = Integer.parseInt(child.getAttribute("width"));
-                    int h = Integer.parseInt(child.getAttribute("height"));
-                    ImageIcon icon = cropImage(full, x, y, w, h);
-                    // scale หลัง crop ถ้ามี
-                    icon = applyScale(icon, child);
-                    target.put(newPath, icon);
-                    System.out.println("  Cropped: " + newPath);
-                    break;
+        if (tagName.equals("image")) {
+            target.receive(fullKey, loadImage(el.getAttribute("file")));
+        } else if (tagName.equals("group")) {
+            NodeList children = el.getChildNodes();
+            for (int i = 0; i < children.getLength(); i++) {
+                if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                    parseElement((Element) children.item(i), ns, key + ".", target);
                 }
             }
         }
     }
 
-    // ──────────────────────────────────────────────
-    //  Helpers
-    // ──────────────────────────────────────────────
-    private ImageIcon loadImageIcon(String fileName) {
-        URL url = getClass().getResource("resouces/" + fileName); // ตรวจสอบตัวสะกด resouces ด้วยนะครับ
-        if (url == null) {
-            System.err.println("  Missing: resouces/" + fileName);
-            return null;
+    private ImageIcon loadImage(String fileName) {
+        // รายชื่อโฟลเดอร์ที่เราจะควานหา
+        String[] subDirs = {"", "dice/", "arrow/", "animation/"};
+
+        // 1. ลองหาแบบไฟล์ตรงๆ (File I/O)
+        for (String sub : subDirs) {
+            File imgFile = new File("src/main/resources/assets/" + sub + fileName);
+            if (imgFile.exists()) {
+                return new ImageIcon(imgFile.getAbsolutePath());
+            }
         }
-        // ใช้ Constructor ที่รับ URL จะช่วยรักษา Animation GIF ไว้ได้
-        return new ImageIcon(url);
+
+        // 2. ถ้าแบบไฟล์ไม่เจอ ลองหาผ่าน Classpath
+        for (String sub : subDirs) {
+            java.net.URL imgUrl = getClass().getClassLoader().getResource("assets/" + sub + fileName);
+            if (imgUrl != null) {
+                return new ImageIcon(imgUrl);
+            }
+        }
+
+        System.err.println("[AssetManager] ❌ didn't load image: " + fileName);
+        return null;
     }
 
-    // อ่าน scale_w / scale_h จาก element ถ้าไม่มีคืน icon เดิม
-    private ImageIcon applyScale(ImageIcon icon, Element el) {
-        String sw = el.getAttribute("scale_w");
-        String sh = el.getAttribute("scale_h");
-        if (sw.isEmpty() || sh.isEmpty()) return icon;
-        return scaleImage(icon, Integer.parseInt(sw), Integer.parseInt(sh));
-    }
-
+    // ──────────────────────────────────────────────
+    //  Static Helpers
+    // ──────────────────────────────────────────────
     public static ImageIcon scaleImage(ImageIcon src, int w, int h) {
         if (src == null) return null;
         Image scaled = src.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
         return new ImageIcon(scaled);
     }
 
-    public static ImageIcon cropImage(ImageIcon src, int x, int y, int w, int h) {
-        if (src == null) return null;
-        Image img = src.getImage();
-        BufferedImage buf = new BufferedImage(
-            src.getIconWidth(), src.getIconHeight(), BufferedImage.TYPE_INT_ARGB
-        );
-        Graphics g = buf.getGraphics();
-        g.drawImage(img, 0, 0, null);
-        g.dispose();
-        int finalW = Math.min(w, buf.getWidth()  - x);
-        int finalH = Math.min(h, buf.getHeight() - y);
-        return new ImageIcon(buf.getSubimage(x, y, finalW, finalH));
-    }
-
-    // ──────────────────────────────────────────────
-    //  Getters
-    // ──────────────────────────────────────────────
-
     public GameAsset getGameAsset() { return gameAsset; }
     public MenuAsset getMenuAsset() { return menuAsset; }
 
     @FunctionalInterface
-    private interface AssetReceiver {
-        void put(String key, ImageIcon icon);
+    public interface AssetReceiver {
+        void receive(String key, ImageIcon icon);
     }
 }
