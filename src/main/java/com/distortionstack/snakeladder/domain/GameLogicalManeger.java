@@ -87,6 +87,8 @@ public abstract class GameLogicalManeger {
         return getCurrentPlayer().getgStatus().getIndex();
     }
 
+    
+
     public void addPlayer(String skinCode) {
         PlayerData player = new PlayerData();
         player.setSkincode(skinCode);
@@ -95,6 +97,15 @@ public abstract class GameLogicalManeger {
 
     public ArrayList<PlayerData> getPlayerList() {
         return playerList;
+    }
+
+    public boolean isGameOver() {
+        for (PlayerData player : playerList) {
+            if (player.getgStatus().isWinner()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int getPlayerAmount() {

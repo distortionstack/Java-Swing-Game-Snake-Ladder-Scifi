@@ -11,7 +11,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.distortionstack.snakeladder.include.AssetReceiver;
 import com.distortionstack.snakeladder.include.assets.game.GameAsset;
 import com.distortionstack.snakeladder.include.assets.menu.MenuAsset;
 
@@ -21,7 +20,7 @@ public class AssetManager {
     private final MenuAsset menuAsset = new MenuAsset();
 
     public AssetManager() {
-        loadManifest("game.xml", gameAsset); 
+        loadManifest("game.xml", gameAsset);
         loadManifest("menu.xml", menuAsset);
     }
 
@@ -65,43 +64,49 @@ public class AssetManager {
     }
 
     private void parseElement(Element el, String ns, String prefix, AssetReceiver target) {
-        String tagName = el.getTagName();
-        String key = prefix + el.getAttribute("key");
-        String fullKey = ns + "." + key;
-        
-        if (tagName.equals("image")) {
-            target.receiveImage(fullKey, loadImage(el.getAttribute("file")));
-        } 
-        else if (tagName.equals("crop")) {
-            // เพิ่มส่วนนี้เพื่อรองรับปุ่มทอยลูกเต๋า!
-            ImageIcon sheet = loadImage(el.getAttribute("file"));
-            if (sheet != null) {
-                int x = Integer.parseInt(el.getAttribute("x"));
-                int y = Integer.parseInt(el.getAttribute("y"));
-                int w = Integer.parseInt(el.getAttribute("width"));
-                int h = Integer.parseInt(el.getAttribute("height"));
-                target.receiveImage(fullKey, ImageHelper.cropImage(sheet, x, y, w, h));
-            }
-        } else if (tagName.equals("sound")) {
-            // สำหรับเสียง เราจะไม่เก็บเป็น ImageIcon แต่จะเก็บเป็นไฟล์พาธแทน (หรืออ็อบเจ็กต์เสียงก็ได้)
-            // แต่เพื่อความง่ายในการจัดการ เราจะใช้ ImageIcon เก็บพาธเสียงใน Description แทน
-            String soundPath = "assets/sounds/" + el.getAttribute("file");
-            target.receiveSound(fullKey, soundPath);
-            
+    String tagName = el.getTagName();
+    String key = prefix + el.getAttribute("key");
+    String fullKey = ns + "." + key;
+
+    if (tagName.equals("image")) {
+        target.receiveImage(fullKey, loadImage(el.getAttribute("file")));
+    } 
+    else if (tagName.equals("crop")) {
+        ImageIcon sheet = loadImage(el.getAttribute("file"));
+        if (sheet != null) {
+            int x = Integer.parseInt(el.getAttribute("x"));
+            int y = Integer.parseInt(el.getAttribute("y"));
+            int w = Integer.parseInt(el.getAttribute("width"));
+            int h = Integer.parseInt(el.getAttribute("height"));
+            target.receiveImage(fullKey, ImageHelper.cropImage(sheet, x, y, w, h));
         }
-        else if (tagName.equals("group")) {
-            NodeList children = el.getChildNodes();
-            for (int i = 0; i < children.getLength(); i++) {
-                if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                    parseElement((Element) children.item(i), ns, key + ".", target);
-                }
+    } 
+    else if (tagName.equals("sound")) {
+        String fileName = el.getAttribute("file");
+        File sFile = new File("src/main/resources/assets/sounds/" + fileName);
+        String absolutePath = sFile.getAbsolutePath();
+        target.receiveSound(fullKey, absolutePath);
+        
+        if (sFile.exists()) {
+            System.out.println("[AssetManager] ✅ Register Sound: " + fullKey);
+        } else {
+            System.err.println("[AssetManager] ❌ File not found: " + fileName);
+        }
+    } // <--- ต้องปิดปีกกาตรงนี้ให้สนิท!
+    else if (tagName.equals("group")) {
+        NodeList children = el.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                // ส่ง key ปัจจุบันไปเป็น prefix เพื่อต่อจุด (.) ให้ลูกๆ
+                parseElement((Element) children.item(i), ns, key + ".", target);
             }
         }
     }
+}
 
     private ImageIcon loadImage(String fileName) {
         // รายชื่อโฟลเดอร์ที่เราจะควานหา
-        String[] subDirs = {"", "dice/", "arrow/", "animation/"};
+        String[] subDirs = { "", "dice/", "arrow/", "animation/" };
 
         // 1. ลองหาแบบไฟล์ตรงๆ (File I/O)
         for (String sub : subDirs) {
@@ -123,7 +128,11 @@ public class AssetManager {
         return null;
     }
 
-    public GameAsset getGameAsset() { return gameAsset; }
-    public MenuAsset getMenuAsset() { return menuAsset; }
-}
+    public GameAsset getGameAsset() {
+        return gameAsset;
+    }
 
+    public MenuAsset getMenuAsset() {
+        return menuAsset;
+    }
+}
