@@ -1,6 +1,5 @@
 package com.distortionstack.snakeladder.ui;
 
-import com.distortionstack.snakeladder.include.AssetManager;
 import com.distortionstack.snakeladder.include.assets.game.GameAsset;
 import javax.swing.*;
 import java.awt.*;
@@ -97,13 +96,7 @@ public class DiceRollAnimation {
 
     // ── ดึงไฟล์รูปแยก 1-6 มา Scale โดยตรง ไม่ต้อง Crop ──
     private void showFace(int face) {
-        // ใช้ getDice(face) ที่คุณเตรียมไว้ใน GameAsset 
-        ImageIcon icon = gameAsset.getDice(face); 
-        
-        if (icon != null) {
-            // Scale รูปให้พอดีกล่อง DISPLAY_SIZE แล้วใส่ JLabel เลย
-            diceDisplay.setIcon(AssetManager.scaleImage(icon, DISPLAY_SIZE, DISPLAY_SIZE));
-        }
+        diceDisplay.setIcon(gameAsset.getDice(face));
     }
 
     // ── Custom component วาดกล่อง + เงา ──

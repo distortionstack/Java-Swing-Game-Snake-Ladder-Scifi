@@ -6,7 +6,7 @@ import javax.swing.SwingUtilities;
 import com.distortionstack.snakeladder.domain.GameStatus;
 import com.distortionstack.snakeladder.domain.PlayerData;
 import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManeger;
-import com.distortionstack.snakeladder.include.config.GameUI;
+import com.distortionstack.snakeladder.include.config.ThreadConfig;
 import com.distortionstack.snakeladder.ui.AnimationThread;
 
 class OfflineAnimationThread extends AnimationThread {
@@ -45,7 +45,7 @@ class OfflineAnimationThread extends AnimationThread {
                         targetIndex = status.getIndex(); // ค่านี้ถูกแก้ใน CheckLadder... แล้ว
                         JFrame animatFrame = gamePanel.getAnimateUFO(targetIndex, currentVisual);
                         animatFrame.setVisible(true);
-                        sleep(GameUI.SNAKE_WARP_ANIMATION_DURATION_MS);
+                        sleep(ThreadConfig.SNAKE_WARP_ANIMATION_DURATION_MS);
                         animatFrame.dispose();
                         currentVisual = targetIndex; // วาร์ปตัวแปร Visual
 
@@ -66,7 +66,7 @@ class OfflineAnimationThread extends AnimationThread {
                 return; // ออกจาก Thread
             }
             try {
-                sleep(GameUI.ANIMATION_FRAME_DELAY_MS);
+                sleep(ThreadConfig.ANIMATION_FRAME_DELAY_MS);
                 // ขยับ 1 ช่อง
                 updateGameStatus(currentVisual + 1);
                 SwingUtilities.invokeLater(() -> gamePanel.repaint());

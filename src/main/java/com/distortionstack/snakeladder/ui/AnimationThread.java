@@ -7,7 +7,6 @@ public abstract class AnimationThread extends Thread{
     protected GamePanel gamePanel;
     protected GameLogicalManeger gamelogical;
     protected boolean running = true;
-    protected long sleepDuration = 200;
     protected int currentVisual;
     protected int targetIndex;
     public AnimationThread(PlayerData playerData , GamePanel gamePanel){

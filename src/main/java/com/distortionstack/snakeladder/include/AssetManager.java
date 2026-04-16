@@ -1,6 +1,5 @@
 package com.distortionstack.snakeladder.include;
 
-import java.awt.Image;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -12,6 +11,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.distortionstack.snakeladder.include.AssetReceiver;
 import com.distortionstack.snakeladder.include.assets.game.GameAsset;
 import com.distortionstack.snakeladder.include.assets.menu.MenuAsset;
 
@@ -21,8 +21,8 @@ public class AssetManager {
     private final MenuAsset menuAsset = new MenuAsset();
 
     public AssetManager() {
-        loadManifest("game.xml", gameAsset::put);
-        loadManifest("menu.xml", menuAsset::put);
+        loadManifest("game.xml", gameAsset); 
+        loadManifest("menu.xml", menuAsset);
     }
 
     private void loadManifest(String xmlFileName, AssetReceiver target) {
@@ -68,9 +68,9 @@ public class AssetManager {
         String tagName = el.getTagName();
         String key = prefix + el.getAttribute("key");
         String fullKey = ns + "." + key;
-
+        
         if (tagName.equals("image")) {
-            target.receive(fullKey, loadImage(el.getAttribute("file")));
+            target.receiveImage(fullKey, loadImage(el.getAttribute("file")));
         } 
         else if (tagName.equals("crop")) {
             // เพิ่มส่วนนี้เพื่อรองรับปุ่มทอยลูกเต๋า!
@@ -80,9 +80,15 @@ public class AssetManager {
                 int y = Integer.parseInt(el.getAttribute("y"));
                 int w = Integer.parseInt(el.getAttribute("width"));
                 int h = Integer.parseInt(el.getAttribute("height"));
-                target.receive(fullKey, cropImage(sheet, x, y, w, h));
+                target.receiveImage(fullKey, ImageHelper.cropImage(sheet, x, y, w, h));
             }
-        } 
+        } else if (tagName.equals("sound")) {
+            // สำหรับเสียง เราจะไม่เก็บเป็น ImageIcon แต่จะเก็บเป็นไฟล์พาธแทน (หรืออ็อบเจ็กต์เสียงก็ได้)
+            // แต่เพื่อความง่ายในการจัดการ เราจะใช้ ImageIcon เก็บพาธเสียงใน Description แทน
+            String soundPath = "assets/sounds/" + el.getAttribute("file");
+            target.receiveSound(fullKey, soundPath);
+            
+        }
         else if (tagName.equals("group")) {
             NodeList children = el.getChildNodes();
             for (int i = 0; i < children.getLength(); i++) {
@@ -90,23 +96,6 @@ public class AssetManager {
                     parseElement((Element) children.item(i), ns, key + ".", target);
                 }
             }
-        }
-    }
-
-    // อย่าลืมเพิ่มเมธอด cropImage ไว้ข้างล่างด้วย (ถ้ายังไม่มี)
-    public static ImageIcon cropImage(ImageIcon src, int x, int y, int w, int h) {
-        if (src == null) return null;
-        try {
-            java.awt.image.BufferedImage buf = new java.awt.image.BufferedImage(
-                src.getIconWidth(), src.getIconHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB
-            );
-            java.awt.Graphics g = buf.getGraphics();
-            g.drawImage(src.getImage(), 0, 0, null);
-            g.dispose();
-            return new ImageIcon(buf.getSubimage(x, y, w, h));
-        } catch (Exception e) {
-            System.err.println("❌ Crop รูปพลาด: " + e.getMessage());
-            return null;
         }
     }
 
@@ -134,20 +123,7 @@ public class AssetManager {
         return null;
     }
 
-    // ──────────────────────────────────────────────
-    //  Static Helpers
-    // ──────────────────────────────────────────────
-    public static ImageIcon scaleImage(ImageIcon src, int w, int h) {
-        if (src == null) return null;
-        Image scaled = src.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
-        return new ImageIcon(scaled);
-    }
-
     public GameAsset getGameAsset() { return gameAsset; }
     public MenuAsset getMenuAsset() { return menuAsset; }
-
-    @FunctionalInterface
-    public interface AssetReceiver {
-        void receive(String key, ImageIcon icon);
-    }
 }
+

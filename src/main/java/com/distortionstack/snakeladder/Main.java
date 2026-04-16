@@ -1,6 +1,5 @@
 package com.distortionstack.snakeladder;
 
-import com.distortionstack.snakeladder.include.AssetManager;
 import com.distortionstack.snakeladder.ui.DisplayController;
 
 public class Main {
