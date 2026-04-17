@@ -33,6 +33,10 @@ public class GameStatus implements Serializable {
         return visibleIndex;
     }
 
+    public void setWinner(boolean isWinner) {
+        this.isWinner = isWinner;
+    }
+
     public boolean isWinner() {
         return isWinner;
     }    

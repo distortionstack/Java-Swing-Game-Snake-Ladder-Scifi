@@ -3,7 +3,7 @@ package com.distortionstack.snakeladder.ui;
 import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManeger;
 import com.distortionstack.snakeladder.include.AssetManager;
 import com.distortionstack.snakeladder.ui.offline.OfflineModeCoordinator;
-import com.distortionstack.snakeladder.ui.test.FinishPanel;
+import com.distortionstack.snakeladder.ui.FinishedPanel;
 
 public class DisplayController {
     private final MainFrame mainFrame;
@@ -38,7 +38,7 @@ public class DisplayController {
 
     public void startOfflineGame() {
         if (offlineCoordinator != null) {
-            switchTo(offlineCoordinator.getofflineGamePanel());
+            switchTo(offlineCoordinator.getOfflineGamePanel());
         } else {
             // กรณีฉุกเฉินถ้าหลุดมาหน้านี้โดยไม่มี coordinator ให้กลับไปเมนูหลัก
             System.out.println("Error: OfflineCoordinator is null!");

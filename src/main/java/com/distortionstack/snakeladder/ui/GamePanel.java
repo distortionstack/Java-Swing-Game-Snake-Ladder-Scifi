@@ -280,20 +280,18 @@ public class GamePanel extends JPanel {
 
     /** เรียกก่อนเริ่มเดิน — animation จบแล้วค่อย callback */
     public void playDiceAnimation(int result, Runnable onFinish) {
-        diceButton.setEnabled(false);
         diceRollAnimation.play(result, () -> {
-            diceButton.setEnabled(true);
             if (onFinish != null)
                 onFinish.run();
         });
     }
 
-    public void BlockDiceButton() {
+    public void blockDiceButton() {
         diceButton.setEnabled(false);
         diceButton.setIcon(assetManager.getGameAsset().getDiceButtonBlcoked());
     }
 
-    public void UnBlockDiceButton() {
+    public void unblockDiceButton() {
         diceButton.setEnabled(true);
         diceButton.setIcon(assetManager.getGameAsset().getDiceButtonUnBlock());
     }

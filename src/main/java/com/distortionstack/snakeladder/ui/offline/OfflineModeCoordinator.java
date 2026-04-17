@@ -2,94 +2,107 @@ package com.distortionstack.snakeladder.ui.offline;
 
 import javax.swing.JButton;
 
+import com.distortionstack.snakeladder.domain.PlayerData;
+import com.distortionstack.snakeladder.domain.TurnResult;
 import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManeger;
 import com.distortionstack.snakeladder.include.AssetManager;
 import com.distortionstack.snakeladder.ui.DisplayController;
 
 public class OfflineModeCoordinator {
-    OfflineGameLogicalManeger offlineLogic;
-    OfflineLobbyPanel offlineLobbyPanel;
-    OfflineGamePanel offlineGamePanel;
-    DisplayController displayController;
-    public static boolean condition = false;
 
-    public OfflineModeCoordinator(OfflineGameLogicalManeger offlineLogic, AssetManager assetManager,DisplayController displayController) {
-        this.offlineLogic = offlineLogic;
+    private final OfflineGameLogicalManeger offlineLogic;
+    private final OfflineLobbyPanel         offlineLobbyPanel;
+    private final OfflineGamePanel          offlineGamePanel;
+    private final DisplayController         displayController;
 
-        offlineLobbyPanel = new OfflineLobbyPanel(assetManager,displayController);
-        offlineGamePanel = new OfflineGamePanel(assetManager, this.offlineLogic ,displayController);
-
+    public OfflineModeCoordinator(OfflineGameLogicalManeger offlineLogic,
+                                  AssetManager assetManager,
+                                  DisplayController displayController) {
+        this.offlineLogic      = offlineLogic;
         this.displayController = displayController;
+
+        offlineLobbyPanel = new OfflineLobbyPanel(assetManager, displayController);
+        offlineGamePanel  = new OfflineGamePanel(assetManager, offlineLogic, displayController);
 
         bindEvents();
     }
 
+    // ─────────────────────────────────────────────
+    //  Event binding
+    // ─────────────────────────────────────────────
+
     private void bindEvents() {
-        // Lobby
         offlineLobbyPanel.getStartButton().addActionListener(e -> onStartGameClicked());
         for (JButton button : offlineLobbyPanel.getSelectSkinButton()) {
-            button.addActionListener(e -> setOnSkinSelected(button));
+            button.addActionListener(e -> onSkinSelected(button));
         }
-        
-        // Game
         offlineGamePanel.addDiceButtonListener(e -> onDiceRolled());
     }
 
-    private void onStartGameClicked(){
-        if(!offlineLogic.getPlayerList().isEmpty()){
+    // ─────────────────────────────────────────────
+    //  Event handlers
+    // ─────────────────────────────────────────────
+
+    private void onStartGameClicked() {
+        if (!offlineLogic.getPlayerList().isEmpty()) {
             displayController.startOfflineGame();
-        }else{
+        } else {
             offlineLobbyPanel.EmptyPlayerAlert();
         }
     }
 
-    private void setOnSkinSelected(JButton button){
-            offlineLogic.addPlayer(button.getText());
-            System.out.println(offlineLogic.getPlayerList().getLast().getSkincode());
-            offlineLobbyPanel.handleSkinSelect(button);
+    private void onSkinSelected(JButton button) {
+        offlineLogic.addPlayer(button.getText());
+        offlineLobbyPanel.handleSkinSelect(button);
     }
 
     private void onDiceRolled() {
-    // 1. เตรียมความพร้อม
-    offlineGamePanel.BlockDiceButton();
-    
-    
-    // 2. ทอยใน Logic ครั้งเดียวเพื่อเอา "ผลลัพธ์ที่จะจบ"
-    offlineLogic.diceRoll(); 
-    int finalResult = offlineLogic.getDiceRollValue(); 
-    
-    // 3. เริ่ม Animation โดยส่งค่า finalResult เข้าไปรอไว้
-    // ในระหว่างที่หมุน DiceAnimation จะสุ่มเลขหลอก (1-6) โชว์ไปเรื่อยๆ เอง
-    offlineGamePanel.getAssetManager().getGameAsset().playDiceRollSound();
+        offlineGamePanel.blockDiceButton();
+
+        // ดึงผู้เล่น **ก่อน** playTurn() เพราะ playTurn() จะ advanceTurn() ไปแล้ว
+        PlayerData currentPlayer = offlineLogic.getCurrentPlayer();
+
+        // Logic ทำงานครั้งเดียว — Coordinator แค่รับผลลัพธ์
+        TurnResult result = offlineLogic.playTurn();
+
+        playSoundsForTurn();
+
+        startAnimationSequence(currentPlayer, result);
+    }
+
+    // ─────────────────────────────────────────────
+    //  Private helpers
+    // ─────────────────────────────────────────────
+
+    private void playSoundsForTurn() {
+        offlineGamePanel.getAssetManager().getGameAsset().playDiceRollSound();
         offlineGamePanel.getAssetManager().getGameAsset().playDiceRollingSound();
-        // อัปเดตตำแหน่งในกระดาน
-        offlineLogic.updateIndex(); 
-        
-        // สั่งเดินตัวละคร
-        executeWalkingSequence();
-}
-
-    private void executeWalkingSequence() {
-            new OfflineAnimationThread(
-                offlineLogic.getCurrentPlayer(),
-                offlineGamePanel,
-                offlineLogic
-            );
-            if (condition) {
-                gameOverSequence();
-            }
     }
 
-    private void gameOverSequence() {
-        offlineGamePanel.getAssetManager().getGameAsset().playGameFinishedSound(); // เล่นเสียงจบเกม
+    /**
+     * สร้าง OfflineAnimationThread โดยส่ง onFinished callback เข้า constructor
+     *
+     * ❌ ไม่ต้องเรียก .start() เอง
+     *    เพราะ constructor ส่ง this::start ให้ playDiceAnimation เป็น callback อยู่แล้ว
+     *    animation ลูกเต๋าจบ → start() ถูกเรียกอัตโนมัติ
+     */
+    private void startAnimationSequence(PlayerData player, TurnResult result) {
+        Runnable onFinished = result.isWin()
+                ? this::onGameOver
+                : offlineGamePanel::unblockDiceButton;
+
+        new OfflineAnimationThread(player, offlineGamePanel, result, onFinished);
     }
 
-    public OfflineGamePanel getofflineGamePanel() {
-        return offlineGamePanel;
+    private void onGameOver() {
+        offlineGamePanel.getAssetManager().getGameAsset().playGameFinishedSound();
+        // TODO: displayController.showFinishScreen(...)
     }
 
-    public OfflineLobbyPanel getOfflineLobby() {
-        return offlineLobbyPanel;
-    }
+    // ─────────────────────────────────────────────
+    //  Getters
+    // ─────────────────────────────────────────────
 
+    public OfflineGamePanel  getOfflineGamePanel() { return offlineGamePanel;  }
+    public OfflineLobbyPanel getOfflineLobby()     { return offlineLobbyPanel; }
 }

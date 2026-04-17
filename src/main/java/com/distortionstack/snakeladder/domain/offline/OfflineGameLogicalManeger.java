@@ -1,7 +1,7 @@
 package com.distortionstack.snakeladder.domain.offline;
 
-import com.distortionstack.snakeladder.domain.GameLogicalManeger;
+import com.distortionstack.snakeladder.domain.GameLogicalManager;
 
-public class OfflineGameLogicalManeger extends GameLogicalManeger{
+public class OfflineGameLogicalManeger extends GameLogicalManager{
 
 }
