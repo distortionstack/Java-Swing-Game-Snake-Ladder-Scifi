@@ -11,10 +11,10 @@ import javax.swing.ImageIcon;
 
 import java.util.List;
 
-import com.distortionstack.snakeladder.domain.GameLogicalManager;
 import com.distortionstack.snakeladder.domain.PlayerData;
 import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManeger;
 import com.distortionstack.snakeladder.include.AssetManager;
+import com.distortionstack.snakeladder.include.config.GameLogical;
 import com.distortionstack.snakeladder.include.config.GameUI;
 import com.distortionstack.snakeladder.ui.DisplayController;
 import com.distortionstack.snakeladder.ui.GamePanel;
@@ -89,7 +89,7 @@ public class OfflineGamePanel extends GamePanel {
             for (PlayerData p : logical.getPlayerList()) {
                 PlayerViewState state = new PlayerViewState();
                 state.player = p;
-                state.visualIndex = GameLogicalManager.START_INDEX; // ดึงค่าเริ่มต้น
+                state.visualIndex = GameLogical.START_INDEX; // ดึงค่าเริ่มต้น
                 playerViewStates.add(state);
             }
         }

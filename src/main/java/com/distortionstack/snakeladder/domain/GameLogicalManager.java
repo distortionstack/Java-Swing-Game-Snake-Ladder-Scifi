@@ -19,9 +19,6 @@ public abstract class GameLogicalManager {
     private final Point[] indexLocation = new Point[101];
     private final ArrayList<PlayerData> playerList = new ArrayList<>();
 
-    public static final int START_INDEX = 0;
-    public static final int END_INDEX   = 100;
-
     private int currentTurnIndex = 0; // เริ่มที่ผู้เล่นคนแรก (index 0)
     private int roll = 0;
 
@@ -82,7 +79,7 @@ public abstract class GameLogicalManager {
     public void resetGame() {
         //เริ่่มเกมใหม่: รีเซ็ตสถานะผู้เล่นทุกคน, เริ่มเทิร์นที่ผู้เล่นคนแรก, รีเซ็ตค่า roll
         for (PlayerData p : playerList) {
-            p.getgStatus().setIndex(START_INDEX);
+            p.getgStatus().setIndex(GameLogical.START_INDEX);
             p.getgStatus().setWinner(false);
         }
         currentTurnIndex = 0;
@@ -114,7 +111,7 @@ public abstract class GameLogicalManager {
      */
     private int calcWalkEnd(int current, int dice) {
         int next = current + dice;
-        return Math.min(next, GameLogicalManager.END_INDEX);
+        return Math.min(next, GameLogical.END_INDEX);
     }
 
     /**
@@ -143,8 +140,8 @@ public abstract class GameLogicalManager {
      * @return true ถ้าชนะ
      */
     private boolean checkAndMarkWin(GameStatus status) {
-        if (status.getIndex() >= GameLogicalManager.END_INDEX) {
-            status.setIndex(GameLogicalManager.END_INDEX);
+        if (status.getIndex() >= GameLogical.END_INDEX) {
+            status.setIndex(GameLogical.END_INDEX);
             status.setWinner(true);
             System.out.println("Player wins!");
             return true;
