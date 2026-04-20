@@ -11,6 +11,7 @@ import javax.swing.ImageIcon;
 
 import java.util.List;
 
+import com.distortionstack.snakeladder.domain.GameLogicalManager;
 import com.distortionstack.snakeladder.domain.PlayerData;
 import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManeger;
 import com.distortionstack.snakeladder.include.AssetManager;
@@ -20,58 +21,76 @@ import com.distortionstack.snakeladder.ui.GamePanel;
 
 public class OfflineGamePanel extends GamePanel {
     OfflineGameLogicalManeger logical;
+    // ใน OfflineGamePanel ก็ประกาศแค่:
+    private List<PlayerViewState> playerViewStates = new ArrayList<>();
 
     public OfflineGamePanel(AssetManager assetManager, OfflineGameLogicalManeger logical,DisplayController displayController) {
         super(assetManager,displayController);
         this.logical = logical;
+        
+        // ทำการ Sync ค่าจาก Model มายัง View
+        syncPlayerPositions();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        drawPlayer(g);
+    }
 
-        if (logical == null) {
-            return; 
-        }
+    @Override
+    public void drawPlayer(Graphics g) {   
+         if(playerViewStates.isEmpty()) return;
 
-        ArrayList<PlayerData> pArrayList = logical.getPlayerList();
-
-        if (pArrayList == null || pArrayList.isEmpty())
-            return;
-
-        // 1. จัดกลุ่มผู้เล่นตามช่องที่ยืน (Map: Index -> List of Players)
+        // 1. จัดกลุ่มผู้เล่นตามช่องที่ยืน "บนหน้าจอ" (visualIndex)
         Map<Integer, List<PlayerData>> playersAtIndex = new HashMap<>();
-        for (PlayerData p : pArrayList) {
-            int idx = p.getgStatus().getVisibleIndex();
-            playersAtIndex.computeIfAbsent(idx, k -> new ArrayList<>()).add(p);
+        for (PlayerViewState state : playerViewStates) {
+            playersAtIndex.computeIfAbsent(state.visualIndex, k -> new ArrayList<>()).add(state.player);
         }
 
         // 2. วาดผู้เล่นทีละช่อง
-        for (Integer index : playersAtIndex.keySet()) {
-            List<PlayerData> playersInThisBlock = playersAtIndex.get(index);
+        for (Map.Entry<Integer, List<PlayerData>> entry : playersAtIndex.entrySet()) {
+            int index = entry.getKey();
+            List<PlayerData> playersInThisBlock = entry.getValue();
             int count = playersInThisBlock.size();
 
             // เช็คว่า Index ถูกต้องและมีพิกัดจริง
-            if (index < onePlayerPoint.length && onePlayerPoint[index] != null) {
+            if (index >= 0 && index < onePlayerPoint.length && onePlayerPoint[index] != null) {
                 Point basePos = onePlayerPoint[index];
 
                 // 3. วาดทุกคนในกลุ่มตามตำแหน่ง "หน้าลูกเต๋า"
                 for (int i = 0; i < count; i++) {
-                    ImageIcon skin = assetManager
-                            .getGameAsset()
-                            .getPlayerSkin(
-                                    playersInThisBlock.get(i)
-                                            .getSkincode());
+                    ImageIcon skin = assetManager.getGameAsset().getPlayerSkin(playersInThisBlock.get(i).getSkincode());
+                    
                     if (skin != null) {
-                        // คำนวณ Offset (ระยะเยื้องจากจุดกึ่งกลาง)
                         Point offset = getDiceOffset(count, i);
-
                         g.drawImage(skin.getImage(),
                                 basePos.x + offset.x,
                                 basePos.y + offset.y,
                                 GameUI.PLAYER_SIZE.width, GameUI.PLAYER_SIZE.height, this);
                     }
                 }
+            }
+        }
+    }
+
+    public void setVisiblePlayerIndex(PlayerData player , int index) {
+        for (PlayerViewState state : playerViewStates) {
+            if (state.player.equals(player)) {
+                state.visualIndex = index;
+                break;
+            }
+        }
+    }
+
+    public void syncPlayerPositions() {
+        playerViewStates.clear();
+        if (logical != null && logical.getPlayerList() != null) {
+            for (PlayerData p : logical.getPlayerList()) {
+                PlayerViewState state = new PlayerViewState();
+                state.player = p;
+                state.visualIndex = GameLogicalManager.START_INDEX; // ดึงค่าเริ่มต้น
+                playerViewStates.add(state);
             }
         }
     }
@@ -135,4 +154,12 @@ public class OfflineGamePanel extends GamePanel {
                 return new Point(GAP, GAP);
         }
     }
+
+    private class PlayerViewState {
+        PlayerData player;
+        int visualIndex;
+        
+        // เอาไว้เก็บพิกัด หรือข้อมูลอนิเมชันเพิ่มในอนาคตได้ตรงนี้
+    }
+
 }

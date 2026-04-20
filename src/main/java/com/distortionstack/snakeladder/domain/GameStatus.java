@@ -4,33 +4,21 @@ import java.io.Serializable;
 
 public class GameStatus implements Serializable {
     private static final long SerialVersionUID = 10l;
-    private int index;
-    private int visibleIndex;
+    private int index = GameLogicalManager.START_INDEX; // เริ่มที่ index 0 (ตำแหน่งเริ่มต้น)
     private boolean isWinner;
 
 
     void setIndex(int index) {
-        if (index < 0) index = 0;
-        if (index > 100) {
-            index = 100; // ถ้าเกิน 100 ให้ค้างไว้ที่ 100
+        if (index < GameLogicalManager.START_INDEX) index = GameLogicalManager.START_INDEX; // ถ้าต่ำกว่า 0 ให้ค้างไว้ที่ 0
+        if (index > GameLogicalManager.END_INDEX) {
+            index = GameLogicalManager.END_INDEX; // ถ้าเกิน 100 ให้ค้างไว้ที่ 100
             isWinner = true; // ประกาศผู้ชนะเมื่อถึง 100
         }
         this.index = index;
     }
 
-    void setVisibleIndex(int visibleIndex) {
-        if (visibleIndex < 0 || visibleIndex > 100) {
-            throw new IllegalArgumentException("VisibleIndex must be 0-100");
-        }
-        this.visibleIndex = visibleIndex;
-    }
-
     public int getIndex() {
         return index;
-    }
-
-    public int getVisibleIndex() {
-        return visibleIndex;
     }
 
     public void setWinner(boolean isWinner) {

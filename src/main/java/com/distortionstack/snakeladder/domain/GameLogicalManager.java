@@ -19,8 +19,13 @@ public abstract class GameLogicalManager {
     private final Point[] indexLocation = new Point[101];
     private final ArrayList<PlayerData> playerList = new ArrayList<>();
 
-    private int currentTurnIndex = 0;
+    public static final int START_INDEX = 0;
+    public static final int END_INDEX   = 100;
+
+    private int currentTurnIndex = 0; // เริ่มที่ผู้เล่นคนแรก (index 0)
     private int roll = 0;
+
+    
 
     // ─────────────────────────────────────────────
     //  Public API  (ฝั่ง Coordinator เรียกได้)
@@ -41,7 +46,6 @@ public abstract class GameLogicalManager {
         int walkEndIndex   = calcWalkEnd(startIndex, roll);
 
         // อัปเดต index หลังเดิน
-        status.setVisibleIndex(startIndex);
         status.setIndex(walkEndIndex);
 
         // เช็ค warp (งู/บันได)
@@ -53,6 +57,11 @@ public abstract class GameLogicalManager {
 
         // เปลี่ยนเทิร์นหลังสุด
         advanceTurn();
+
+        System.out.println("Turn played: Player " + (currentTurnIndex + 1) + " rolled " + roll +
+                           ", moved from " + startIndex + " to " + walkEndIndex +
+                           (warped ? " and warped to " + finalIndex : "") +
+                           (won ? " and won the game!" : ""));
 
         return new TurnResult(roll, startIndex, walkEndIndex, finalIndex, warped, won);
     }
@@ -68,6 +77,16 @@ public abstract class GameLogicalManager {
             if (p.getgStatus().isWinner()) return true;
         }
         return false;
+    }
+
+    public void resetGame() {
+        //เริ่่มเกมใหม่: รีเซ็ตสถานะผู้เล่นทุกคน, เริ่มเทิร์นที่ผู้เล่นคนแรก, รีเซ็ตค่า roll
+        for (PlayerData p : playerList) {
+            p.getgStatus().setIndex(START_INDEX);
+            p.getgStatus().setWinner(false);
+        }
+        currentTurnIndex = 0;
+        roll = 0;
     }
 
     // ─────────────────────────────────────────────
@@ -91,11 +110,11 @@ public abstract class GameLogicalManager {
     }
 
     /**
-     * คำนวณตำแหน่งหลังเดิน โดยไม่เกิน 100
+     * คำนวณตำแหน่งหลังเดิน โดยไม่เกิน   
      */
     private int calcWalkEnd(int current, int dice) {
         int next = current + dice;
-        return Math.min(next, 100);
+        return Math.min(next, GameLogicalManager.END_INDEX);
     }
 
     /**
@@ -124,8 +143,8 @@ public abstract class GameLogicalManager {
      * @return true ถ้าชนะ
      */
     private boolean checkAndMarkWin(GameStatus status) {
-        if (status.getIndex() >= 100) {
-            status.setIndex(100);
+        if (status.getIndex() >= GameLogicalManager.END_INDEX) {
+            status.setIndex(GameLogicalManager.END_INDEX);
             status.setWinner(true);
             System.out.println("Player wins!");
             return true;

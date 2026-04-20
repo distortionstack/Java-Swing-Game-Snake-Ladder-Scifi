@@ -3,7 +3,6 @@ package com.distortionstack.snakeladder.ui.offline;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import com.distortionstack.snakeladder.domain.GameStatus;
 import com.distortionstack.snakeladder.domain.PlayerData;
 import com.distortionstack.snakeladder.domain.TurnResult;
 import com.distortionstack.snakeladder.include.config.ThreadConfig;
@@ -17,17 +16,16 @@ import com.distortionstack.snakeladder.ui.AnimationThread;
  */
 class OfflineAnimationThread extends AnimationThread {
 
-    private final GameStatus    status;
     private final Runnable      onFinished; // callback เมื่อ animation จบ
-    private int startIndex = 0;
+    private OfflineGamePanel gamePanel;
 
     OfflineAnimationThread(PlayerData playerData,
                            OfflineGamePanel offlineGamePanel,
                            TurnResult turnResult,
                            Runnable onFinished) {
         super(playerData, offlineGamePanel, turnResult);
-        this.status     = playerData.getgStatus();
         this.onFinished = onFinished;
+        gamePanel = offlineGamePanel;
 
         // เริ่มเล่น dice animation ก่อน แล้วค่อย start() thread เดิน
         offlineGamePanel.playDiceAnimation(turnResult.getDiceValue(), this::start);
@@ -48,6 +46,7 @@ class OfflineAnimationThread extends AnimationThread {
             if (turnResult.isWarp()) {
                 playWarpAnimation(walkTarget, turnResult.getFinalIndex());
                 currentVisual = turnResult.getFinalIndex();
+                gamePanel.setVisiblePlayerIndex(playerData, currentVisual);
             }
 
             repaintBoard();
@@ -112,10 +111,14 @@ class OfflineAnimationThread extends AnimationThread {
 
     private synchronized void advanceOneStep() {
         currentVisual++;
-        status.setVisibleIndex(currentVisual);
+        gamePanel.setVisiblePlayerIndex(playerData , currentVisual);
     }
 
     private void repaintBoard() {
         SwingUtilities.invokeLater(gamePanel::repaint);
+    }
+
+    public int getCurrentVisual(){
+        return currentVisual;
     }
 }

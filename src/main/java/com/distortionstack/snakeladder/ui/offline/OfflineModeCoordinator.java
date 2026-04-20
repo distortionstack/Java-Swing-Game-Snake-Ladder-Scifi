@@ -45,6 +45,7 @@ public class OfflineModeCoordinator {
 
     private void onStartGameClicked() {
         if (!offlineLogic.getPlayerList().isEmpty()) {
+            offlineGamePanel.syncPlayerPositions();
             displayController.startOfflineGame();
         } else {
             offlineLobbyPanel.EmptyPlayerAlert();

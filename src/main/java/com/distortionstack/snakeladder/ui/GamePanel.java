@@ -230,26 +230,7 @@ public class GamePanel extends JPanel {
         diceLabel.setIcon(assetManager.getGameAsset().getDice(face));
     }
 
-    public void drawPlayer(Graphics g, ArrayList<PlayerData> playerList) {
-        if (playerList == null || playerList.isEmpty()) {
-            System.out.println("Player list is null or empty");
-            return;
-        }
-        for (PlayerData playerData : playerList) {
-            int index = playerData.getgStatus().getVisibleIndex();
-            if (index < 0 || index >= onePlayerPoint.length) {
-                System.out.println("Invalid index: " + index);
-                continue;
-            }
-            ImageIcon skin = assetManager.getGameAsset().getPlayerSkin(playerData.getSkincode());
-            if (skin == null || skin.getImage() == null) {
-                System.out.println("Skin not found for: " + playerData.getSkincode());
-                continue;
-            }
-            Point position = onePlayerPoint[index];
-            g.drawImage(skin.getImage(), position.x, position.y, 13, 19, this);
-        }
-    }
+    public void drawPlayer(Graphics g, ArrayList<PlayerData> playerList) {}
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -322,6 +303,11 @@ public class GamePanel extends JPanel {
 
     public DisplayController getDisplayController() {
         return displayController;
+    }
+
+    public void drawPlayer(Graphics g) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'drawPlayer'");
     }
 }
 
