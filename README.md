@@ -209,8 +209,3 @@ java -jar dist/SnakeLadder.jar
 - มี debug `System.out` บางจุดที่ยังสามารถ refactor เป็น logger เพิ่มเติมได้ในอนาคต
 
 ---
-
-หากต้องการต่อยอด แนะนำลำดับถัดไป:
-1. เปลี่ยน `System.out` สำคัญเป็น `Logger`
-2. ปิด TODO/stub ที่เหลือ
-3. เพิ่ม test แยกสำหรับ `GameLogicalManager` เพื่อ validate กติกาเกมอัตโนมัติ
