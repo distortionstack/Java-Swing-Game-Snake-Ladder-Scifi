@@ -1,6 +1,7 @@
 package com.distortionstack.snakeladder.ui.offline;
 
-import javax.swing.JFrame;
+import java.lang.reflect.InvocationTargetException;
+import java.util.function.Consumer;
 import javax.swing.SwingUtilities;
 
 import com.distortionstack.snakeladder.domain.PlayerData;
@@ -16,16 +17,34 @@ import com.distortionstack.snakeladder.ui.AnimationThread;
  */
 class OfflineAnimationThread extends AnimationThread {
 
-    private final Runnable      onFinished; // callback เมื่อ animation จบ
-    private OfflineGamePanel gamePanel;
+    static final class AnimationCompletion {
+        private final boolean win;
+        private final String winnerSkinCode;
+
+        AnimationCompletion(boolean win, String winnerSkinCode) {
+            this.win = win;
+            this.winnerSkinCode = winnerSkinCode;
+        }
+
+        boolean isWin() {
+            return win;
+        }
+
+        String getWinnerSkinCode() {
+            return winnerSkinCode;
+        }
+    }
+
+    private final Consumer<AnimationCompletion> onFinished; // callback เมื่อ animation จบ
+    private final OfflineGamePanel gamePanel;
 
     OfflineAnimationThread(PlayerData playerData,
                            OfflineGamePanel offlineGamePanel,
                            TurnResult turnResult,
-                           Runnable onFinished) {
+                           Consumer<AnimationCompletion> onFinished) {
         super(playerData, offlineGamePanel, turnResult);
         this.onFinished = onFinished;
-        gamePanel = offlineGamePanel;
+        this.gamePanel = offlineGamePanel;
 
         // เริ่มเล่น dice animation ก่อน แล้วค่อย start() thread เดิน
         offlineGamePanel.playDiceAnimation(turnResult.getDiceValue(), this::start);
@@ -50,16 +69,12 @@ class OfflineAnimationThread extends AnimationThread {
             }
 
             repaintBoard();
-
-            if (turnResult.isWin()) {
-                handleWin();
-            } else {
-                handleTurnEnd();
-            }
+            notifyCompletion(turnResult.isWin());
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println("OfflineAnimationThread interrupted: " + e.getMessage());
+            notifyCompletion(false);
         }
     }
 
@@ -83,26 +98,10 @@ class OfflineAnimationThread extends AnimationThread {
      * เล่น warp animation (UFO/งู/บันได) จาก warpFrom → warpTo
      */
     private void playWarpAnimation(int warpFrom, int warpTo) throws InterruptedException {
-        JFrame warpFrame = gamePanel.getAnimateUFO(warpTo, warpFrom);
         gamePanel.getAssetManager().getGameAsset().playWarpSound();
-        warpFrame.setVisible(true);
+        runOnEdtAndWait(() -> gamePanel.showWarpAnimationIcon(warpTo, warpFrom));
         sleep(ThreadConfig.SNAKE_WARP_ANIMATION_DURATION_MS);
-        warpFrame.dispose();
-    }
-
-    private void handleWin() {
-        System.out.println("🎉 Game Finished!");
-        gamePanel.getAssetManager().getGameAsset().playGameFinishedSound();
-        SwingUtilities.invokeLater(() ->
-            gamePanel.getDisplayController().showFinishScreen(playerData.getSkincode())
-        );
-        // ไม่ปลดล็อคปุ่ม เพราะเกมจบแล้ว
-        onFinished.run();
-    }
-
-    private void handleTurnEnd() {
-        System.out.println("Turn Finished.");
-        onFinished.run(); // Coordinator จะปลดล็อกปุ่มให้
+        runOnEdtAndWait(gamePanel::hideWarpAnimationIcon);
     }
 
     // ─────────────────────────────────────────────
@@ -116,6 +115,21 @@ class OfflineAnimationThread extends AnimationThread {
 
     private void repaintBoard() {
         SwingUtilities.invokeLater(gamePanel::repaint);
+    }
+
+    private void notifyCompletion(boolean isWin) {
+        if (onFinished == null) {
+            return;
+        }
+        onFinished.accept(new AnimationCompletion(isWin, isWin ? playerData.getSkinCode() : null));
+    }
+
+    private void runOnEdtAndWait(Runnable action) throws InterruptedException {
+        try {
+            SwingUtilities.invokeAndWait(action);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException("Failed to run warp animation action on EDT", e);
+        }
     }
 
     public int getCurrentVisual(){

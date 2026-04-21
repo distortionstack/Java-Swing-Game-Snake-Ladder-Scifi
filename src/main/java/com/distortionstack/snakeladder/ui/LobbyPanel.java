@@ -49,7 +49,6 @@ public abstract class LobbyPanel extends JPanel {
     }
     @Override
     protected void paintComponent(Graphics g) {
-        // TODO Auto-generated method stub
         super.paintComponent(g);
         g.drawImage(assetManager.getMenuAsset().getMenuBackground().getImage(), 
                     0, 0, getWidth(), getHeight(), this);

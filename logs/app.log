@@ -1,0 +1,4 @@
+Apr 21, 2026 8:16:54 PM com.distortionstack.snakeladder.include.LogConfig initialize
+INFO: Logging initialized at logs/app.log
+Apr 21, 2026 8:16:54 PM com.distortionstack.snakeladder.Main main
+INFO: Starting Snake & Ladder Game...

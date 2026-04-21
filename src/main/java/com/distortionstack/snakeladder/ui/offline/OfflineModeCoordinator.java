@@ -1,21 +1,25 @@
 package com.distortionstack.snakeladder.ui.offline;
 
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 import com.distortionstack.snakeladder.domain.PlayerData;
 import com.distortionstack.snakeladder.domain.TurnResult;
-import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManeger;
+import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManager;
 import com.distortionstack.snakeladder.include.AssetManager;
 import com.distortionstack.snakeladder.ui.DisplayController;
 
 public class OfflineModeCoordinator {
 
-    private final OfflineGameLogicalManeger offlineLogic;
+    private final OfflineGameLogicalManager offlineLogic;
     private final OfflineLobbyPanel         offlineLobbyPanel;
     private final OfflineGamePanel          offlineGamePanel;
     private final DisplayController         displayController;
+    private volatile boolean animationCompletedFlag;
+    private volatile boolean gameOverFlag;
+    private volatile String winnerSkinCode;
 
-    public OfflineModeCoordinator(OfflineGameLogicalManeger offlineLogic,
+    public OfflineModeCoordinator(OfflineGameLogicalManager offlineLogic,
                                   AssetManager assetManager,
                                   DisplayController displayController) {
         this.offlineLogic      = offlineLogic;
@@ -48,7 +52,7 @@ public class OfflineModeCoordinator {
             offlineGamePanel.syncPlayerPositions();
             displayController.startOfflineGame();
         } else {
-            offlineLobbyPanel.EmptyPlayerAlert();
+            offlineLobbyPanel.showEmptyPlayerAlert();
         }
     }
 
@@ -88,16 +92,40 @@ public class OfflineModeCoordinator {
      *    animation ลูกเต๋าจบ → start() ถูกเรียกอัตโนมัติ
      */
     private void startAnimationSequence(PlayerData player, TurnResult result) {
-        Runnable onFinished = result.isWin()
-                ? this::onGameOver
-                : offlineGamePanel::unblockDiceButton;
+        animationCompletedFlag = false;
+        gameOverFlag = false;
+        winnerSkinCode = null;
 
-        new OfflineAnimationThread(player, offlineGamePanel, result, onFinished);
+        new OfflineAnimationThread(player, offlineGamePanel, result, this::onAnimationCompleted);
+    }
+
+    private void onAnimationCompleted(OfflineAnimationThread.AnimationCompletion completion) {
+        gameOverFlag = completion.isWin();
+        winnerSkinCode = completion.getWinnerSkinCode();
+        animationCompletedFlag = true;
+
+        // ให้ฝั่ง UI เป็นคนอ่าน flag และตัดสินใจขั้นถัดไป
+        SwingUtilities.invokeLater(this::processAnimationCompletion);
+    }
+
+    private void processAnimationCompletion() {
+        if (!animationCompletedFlag) {
+            return;
+        }
+
+        animationCompletedFlag = false;
+        if (gameOverFlag) {
+            onGameOver();
+        } else {
+            offlineGamePanel.unblockDiceButton();
+        }
     }
 
     private void onGameOver() {
         offlineGamePanel.getAssetManager().getGameAsset().playGameFinishedSound();
-        // TODO: displayController.showFinishScreen(...)
+        if (winnerSkinCode != null) {
+            displayController.showFinishScreen(winnerSkinCode);
+        }
     }
 
     // ─────────────────────────────────────────────

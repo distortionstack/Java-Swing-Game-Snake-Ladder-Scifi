@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.distortionstack.snakeladder.include.config.GameLogical;
 
 public class GameStatus implements Serializable {
-    private static final long SerialVersionUID = 10l;
+    private static final long serialVersionUID = 10L;
     private int index = GameLogical.START_INDEX; // เริ่มที่ index 0 (ตำแหน่งเริ่มต้น)
     private boolean isWinner;
 

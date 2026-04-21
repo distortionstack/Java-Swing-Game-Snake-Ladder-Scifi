@@ -3,31 +3,31 @@ import java.io.Serializable;
 
 
 public class PlayerData {
-    private static final long SerialVersionUID = 10l;
+    private static final long serialVersionUID = 10L;
 
-    String PlayerID;
-    String Skincode = "Invalid";
+    String playerId;
+    String skinCode = "Invalid";
 
-    GameStatus gStatus;
+    GameStatus gameStatus;
     LobbyStatus lobbyStatus;
 
     PlayerData(){
-        gStatus = new GameStatus();
+        gameStatus = new GameStatus();
         lobbyStatus = new LobbyStatus();
     }
 
-    public void setSkincode(String skincode) {
-        Skincode = skincode;
+    public void setSkinCode(String skinCode) {
+        this.skinCode = skinCode;
     }
 
     public LobbyStatus getLobbyStatus() {
         return lobbyStatus;
     }
-    public GameStatus getgStatus() {
-        return gStatus;
+    public GameStatus getGameStatus() {
+        return gameStatus;
     }
-    public String getSkincode() {
-        return Skincode;
+    public String getSkinCode() {
+        return skinCode;
     }
 
 }

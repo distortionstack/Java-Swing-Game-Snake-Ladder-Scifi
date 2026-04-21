@@ -1,6 +1,8 @@
 package com.distortionstack.snakeladder.ui;
 
-import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManeger;
+import javax.swing.SwingUtilities;
+
+import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManager;
 import com.distortionstack.snakeladder.include.AssetManager;
 import com.distortionstack.snakeladder.ui.offline.OfflineModeCoordinator;
 import com.distortionstack.snakeladder.ui.FinishedPanel;
@@ -31,8 +33,8 @@ public class DisplayController {
     }
 
     public void startOfflineMode() {
-        OfflineGameLogicalManeger offlineGameLogin = new OfflineGameLogicalManeger();
-        offlineCoordinator = new OfflineModeCoordinator(offlineGameLogin, assetManager, this);
+        OfflineGameLogicalManager offlineGameLogic = new OfflineGameLogicalManager();
+        offlineCoordinator = new OfflineModeCoordinator(offlineGameLogic, assetManager, this);
         showOfflineLobbyPanel();
     }
 
@@ -68,9 +70,11 @@ public class DisplayController {
 
     // Helper method สำหรับล้างหน้าเก่าแล้วใส่หน้าใหม่
     private void switchTo(javax.swing.JPanel panel) {
-        mainFrame.getContentPane().removeAll();
-        mainFrame.add(panel);
-        mainFrame.revalidate();
-        mainFrame.repaint();
+        SwingUtilities.invokeLater(() -> {
+            mainFrame.getContentPane().removeAll();
+            mainFrame.add(panel);
+            mainFrame.revalidate();
+            mainFrame.repaint();
+        });
     }
 }

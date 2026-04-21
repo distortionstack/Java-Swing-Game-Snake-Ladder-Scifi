@@ -34,10 +34,14 @@ public abstract class GameLogicalManager {
      * ลำดับ: ทอย → บันทึก startIndex → เดิน → เช็ค warp → เช็ค win → เปลี่ยนเทิร์น
      */
     public TurnResult playTurn() {
+        if (playerList.isEmpty()) {
+            throw new IllegalStateException("Cannot play turn without players");
+        }
+
         rollDice();
 
         PlayerData player  = getCurrentPlayer();
-        GameStatus status  = player.getgStatus();
+        GameStatus status  = player.getGameStatus();
 
         int startIndex     = status.getIndex();
         int walkEndIndex   = calcWalkEnd(startIndex, roll);
@@ -65,13 +69,13 @@ public abstract class GameLogicalManager {
 
     public void addPlayer(String skinCode) {
         PlayerData player = new PlayerData();
-        player.setSkincode(skinCode);
+        player.setSkinCode(skinCode);
         playerList.add(player);
     }
 
     public boolean isGameOver() {
         for (PlayerData p : playerList) {
-            if (p.getgStatus().isWinner()) return true;
+            if (p.getGameStatus().isWinner()) return true;
         }
         return false;
     }
@@ -79,8 +83,8 @@ public abstract class GameLogicalManager {
     public void resetGame() {
         //เริ่่มเกมใหม่: รีเซ็ตสถานะผู้เล่นทุกคน, เริ่มเทิร์นที่ผู้เล่นคนแรก, รีเซ็ตค่า roll
         for (PlayerData p : playerList) {
-            p.getgStatus().setIndex(GameLogical.START_INDEX);
-            p.getgStatus().setWinner(false);
+            p.getGameStatus().setIndex(GameLogical.START_INDEX);
+            p.getGameStatus().setWinner(false);
         }
         currentTurnIndex = 0;
         roll = 0;
@@ -91,6 +95,9 @@ public abstract class GameLogicalManager {
     // ─────────────────────────────────────────────
 
     public PlayerData getCurrentPlayer() {
+        if (playerList.isEmpty()) {
+            throw new IllegalStateException("No players in current game");
+        }
         return playerList.get(currentTurnIndex);
     }
 
@@ -150,6 +157,10 @@ public abstract class GameLogicalManager {
     }
 
     private void advanceTurn() {
+        if (playerList.isEmpty()) {
+            currentTurnIndex = 0;
+            return;
+        }
         currentTurnIndex = (currentTurnIndex + 1) % playerList.size();
     }
 }

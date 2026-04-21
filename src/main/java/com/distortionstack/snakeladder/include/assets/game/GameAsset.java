@@ -17,7 +17,7 @@ public class GameAsset implements AssetReceiver {
 
     // ── Background ──
     public ImageIcon getGameBackGround()    { return mapImage.get("game.background"); }
-    public ImageIcon getMenubackground()    { return mapImage.get("menu.background"); }
+    public ImageIcon getMenuBackground()    { return mapImage.get("menu.background"); }
 
     // ── Dice faces (1-6) ──
     public ImageIcon getDice(int face)      { return ImageHelper.scaleImage(mapImage.get("game.dice." + face), 180, 180); }
@@ -30,12 +30,12 @@ public class GameAsset implements AssetReceiver {
     public ImageIcon getUfoDown()           { return mapImage.get("game.ufo.down"); }
 
     // ── Arrows ──
-    public ImageIcon getArrow_up()          { return mapImage.get("game.arrow.up"); }
-    public ImageIcon getArrow_down()        { return mapImage.get("game.arrow.down"); }
+    public ImageIcon getArrowUp()           { return mapImage.get("game.arrow.up"); }
+    public ImageIcon getArrowDown()         { return mapImage.get("game.arrow.down"); }
 
     // ── Dice button ──
-    public ImageIcon getDiceButtonUnBlock() { return mapImage.get("game.dice_button.normal"); }
-    public ImageIcon getDiceButtonBlcoked() { return mapImage.get("game.dice_button.disabled"); }
+    public ImageIcon getDiceButtonUnblocked() { return mapImage.get("game.dice_button.normal"); }
+    public ImageIcon getDiceButtonBlocked()   { return mapImage.get("game.dice_button.disabled"); }
 
     // ── Dice roll animation frames (1-6) ──
     public ImageIcon getDiceSheet(int face) { return mapImage.get("game.dice." + face); }

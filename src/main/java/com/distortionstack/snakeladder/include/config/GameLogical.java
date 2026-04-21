@@ -1,8 +1,8 @@
 package com.distortionstack.snakeladder.include.config;
 
 public class GameLogical {
-        public static String [] SKINCODE_ARRAY = {"red","yellow","green","blue","purple","white"};
-        public static int SKINCODE_ARRAY_LENGTH = SKINCODE_ARRAY.length;
+        public static final String [] SKINCODE_ARRAY = {"red","yellow","green","blue","purple","white"};
+        public static final int SKINCODE_ARRAY_LENGTH = SKINCODE_ARRAY.length;
 
         public static final int START_INDEX = 0;
         public static final int END_INDEX   = 100;

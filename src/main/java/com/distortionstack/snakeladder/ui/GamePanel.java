@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -40,6 +39,7 @@ public class GamePanel extends JPanel {
     protected DisplayController displayController;
 
     protected JPanel overlay; // panel ที่ครอบ DiceDisplay
+    protected JLabel warpAnimLabel;
 
     public GamePanel(AssetManager assetManager, DisplayController displayController) {
         this.assetManager = assetManager;
@@ -49,7 +49,7 @@ public class GamePanel extends JPanel {
         diceButton = new JButton() {
             {
                 setBounds(new Rectangle(GameUI.DICE_BUTTON_POINT, GameUI.DICE_BUTTON_DIMENSION));
-                setIcon(assetManager.getGameAsset().getDiceButtonUnBlock());
+                setIcon(assetManager.getGameAsset().getDiceButtonUnblocked());
                 setContentAreaFilled(false);
                 setBorderPainted(false);
                 setFocusPainted(false);
@@ -57,10 +57,10 @@ public class GamePanel extends JPanel {
         };
 
         for (int i = 0; i < upJLabels.length; i++)
-            upJLabels[i] = new JLabel(assetManager.getGameAsset().getArrow_up());
+            upJLabels[i] = new JLabel(assetManager.getGameAsset().getArrowUp());
 
         for (int i = 0; i < downJLabels.length; i++)
-            downJLabels[i] = new JLabel(assetManager.getGameAsset().getArrow_down());
+            downJLabels[i] = new JLabel(assetManager.getGameAsset().getArrowDown());
 
         setLayout(null);
         setPreferredSize(DisplayUI.WINDOW_SIZE);
@@ -80,6 +80,11 @@ public class GamePanel extends JPanel {
                 DisplayUI.WINDOW_SIZE.width,
                 DisplayUI.WINDOW_SIZE.height);
         add(diceAnimLabel);
+
+        warpAnimLabel = new JLabel();
+        warpAnimLabel.setVisible(false);
+        add(warpAnimLabel);
+        setComponentZOrder(warpAnimLabel, 0);
     }
 
     public void addDiceButtonListener(ActionListener listener) {
@@ -110,9 +115,9 @@ public class GamePanel extends JPanel {
         this.overlay.setBounds(0, 0, panelW, panelH);
         this.overlay.setVisible(false);
 
-        int cx = (panelW - GameUI.DiCE_PANEL_SIZE) / 2;
-        int cy = (panelH - GameUI.DiCE_PANEL_SIZE) / 2;
-        this.diceLabel.setBounds(cx, cy, GameUI.DiCE_PANEL_SIZE, GameUI.DiCE_PANEL_SIZE);
+        int cx = (panelW - GameUI.DICE_PANEL_SIZE) / 2;
+        int cy = (panelH - GameUI.DICE_PANEL_SIZE) / 2;
+        this.diceLabel.setBounds(cx, cy, GameUI.DICE_PANEL_SIZE, GameUI.DICE_PANEL_SIZE);
 
         this.overlay.add(this.diceLabel);
         parentPanel.add(this.overlay);
@@ -146,7 +151,7 @@ public class GamePanel extends JPanel {
         }
 
         // ── Ladder Up ──
-        ImageIcon arrowUp = assetManager.getGameAsset().getArrow_up();
+        ImageIcon arrowUp = assetManager.getGameAsset().getArrowUp();
         for (int i = 0; i < upJLabels.length; i++) {
             int tileIndex = GameLogical.LADDERS_UP[i][0];
             if (tileIndex < onePlayerPoint.length && onePlayerPoint[tileIndex] != null) {
@@ -181,7 +186,7 @@ public class GamePanel extends JPanel {
         }
 
         // ── Snake Down ──
-        ImageIcon arrowDown = assetManager.getGameAsset().getArrow_down();
+        ImageIcon arrowDown = assetManager.getGameAsset().getArrowDown();
         for (int i = 0; i < downJLabels.length; i++) {
             int tileIndex = GameLogical.SNAKES_DOWN[i][0];
             if (tileIndex < onePlayerPoint.length && onePlayerPoint[tileIndex] != null) {
@@ -269,32 +274,39 @@ public class GamePanel extends JPanel {
 
     public void blockDiceButton() {
         diceButton.setEnabled(false);
-        diceButton.setIcon(assetManager.getGameAsset().getDiceButtonBlcoked());
+        diceButton.setIcon(assetManager.getGameAsset().getDiceButtonBlocked());
     }
 
     public void unblockDiceButton() {
         diceButton.setEnabled(true);
-        diceButton.setIcon(assetManager.getGameAsset().getDiceButtonUnBlock());
+        diceButton.setIcon(assetManager.getGameAsset().getDiceButtonUnblocked());
     }
 
     public JButton getDiceButton() {
         return diceButton;
     }
 
-    public JFrame getAnimateUFO(int newPos, int oldPos) {
+    public void showWarpAnimationIcon(int newPos, int oldPos) {
         ImageIcon icon = newPos < oldPos
                 ? assetManager.getGameAsset().getUfoDown()
                 : assetManager.getGameAsset().getUfoUp();
 
-        return new JFrame() {
-            {
-                add(new JLabel(icon));
-                setSize(icon.getIconWidth(), icon.getIconHeight());
-                setLocationRelativeTo(null);
-                setUndecorated(true);
-                setAlwaysOnTop(true);
-            }
-        };
+        if (icon == null) {
+            return;
+        }
+
+        int x = (getWidth() - icon.getIconWidth()) / 2;
+        int y = (getHeight() - icon.getIconHeight()) / 2;
+        warpAnimLabel.setIcon(icon);
+        warpAnimLabel.setBounds(x, y, icon.getIconWidth(), icon.getIconHeight());
+        warpAnimLabel.setVisible(true);
+        repaint();
+    }
+
+    public void hideWarpAnimationIcon() {
+        warpAnimLabel.setVisible(false);
+        warpAnimLabel.setIcon(null);
+        repaint();
     }
 
     public JPanel getOverlay() {
@@ -306,7 +318,6 @@ public class GamePanel extends JPanel {
     }
 
     public void drawPlayer(Graphics g) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'drawPlayer'");
     }
 }

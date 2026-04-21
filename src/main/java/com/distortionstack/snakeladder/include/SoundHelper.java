@@ -1,6 +1,7 @@
 package com.distortionstack.snakeladder.include;
 
 import java.io.File;
+import java.net.URL;
 import javax.sound.sampled.*;
 
 public class SoundHelper {
@@ -8,13 +9,17 @@ public class SoundHelper {
         if (soundFilePath == null || soundFilePath.isEmpty()) return;
 
         try {
-            File soundFile = new File(soundFilePath);
-            if (!soundFile.exists()) {
-                System.err.println("❌ ไม่พบไฟล์เสียงที่: " + soundFilePath);
-                return;
+            AudioInputStream audioInputStream;
+            if (isUrlPath(soundFilePath)) {
+                audioInputStream = AudioSystem.getAudioInputStream(new URL(soundFilePath));
+            } else {
+                File soundFile = new File(soundFilePath);
+                if (!soundFile.exists()) {
+                    System.err.println("❌ ไม่พบไฟล์เสียงที่: " + soundFilePath);
+                    return;
+                }
+                audioInputStream = AudioSystem.getAudioInputStream(soundFile);
             }
-
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
             Clip clip = AudioSystem.getClip();
             clip.open(audioInputStream);
             clip.start();
@@ -31,5 +36,12 @@ public class SoundHelper {
         } catch (Exception e) {
             System.err.println("❌ เกิดข้อผิดพลาดในการเล่นเสียง: " + e.getMessage());
         }
+    }
+
+    private static boolean isUrlPath(String path) {
+        return path.startsWith("file:")
+                || path.startsWith("jar:")
+                || path.startsWith("http:")
+                || path.startsWith("https:");
     }
 }

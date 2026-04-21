@@ -12,7 +12,7 @@ import javax.swing.ImageIcon;
 import java.util.List;
 
 import com.distortionstack.snakeladder.domain.PlayerData;
-import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManeger;
+import com.distortionstack.snakeladder.domain.offline.OfflineGameLogicalManager;
 import com.distortionstack.snakeladder.include.AssetManager;
 import com.distortionstack.snakeladder.include.config.GameLogical;
 import com.distortionstack.snakeladder.include.config.GameUI;
@@ -20,11 +20,11 @@ import com.distortionstack.snakeladder.ui.DisplayController;
 import com.distortionstack.snakeladder.ui.GamePanel;
 
 public class OfflineGamePanel extends GamePanel {
-    OfflineGameLogicalManeger logical;
+    OfflineGameLogicalManager logical;
     // ใน OfflineGamePanel ก็ประกาศแค่:
     private List<PlayerViewState> playerViewStates = new ArrayList<>();
 
-    public OfflineGamePanel(AssetManager assetManager, OfflineGameLogicalManeger logical,DisplayController displayController) {
+    public OfflineGamePanel(AssetManager assetManager, OfflineGameLogicalManager logical,DisplayController displayController) {
         super(assetManager,displayController);
         this.logical = logical;
         
@@ -60,7 +60,7 @@ public class OfflineGamePanel extends GamePanel {
 
                 // 3. วาดทุกคนในกลุ่มตามตำแหน่ง "หน้าลูกเต๋า"
                 for (int i = 0; i < count; i++) {
-                    ImageIcon skin = assetManager.getGameAsset().getPlayerSkin(playersInThisBlock.get(i).getSkincode());
+                    ImageIcon skin = assetManager.getGameAsset().getPlayerSkin(playersInThisBlock.get(i).getSkinCode());
                     
                     if (skin != null) {
                         Point offset = getDiceOffset(count, i);

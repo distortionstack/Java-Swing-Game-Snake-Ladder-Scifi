@@ -16,7 +16,7 @@ public class GameUI{
         public static final int CELL_HEIGHT_PX = 58;
         public static final int CELL_OFFSET_ADJUSTMENT_X = 14;
         
-        public static final int DiCE_PANEL_SIZE = 180; // ลูกเต๋าสี่เหลี่ยมจตุรัส
+        public static final int DICE_PANEL_SIZE = 180; // ลูกเต๋าสี่เหลี่ยมจตุรัส
         // Player rendering
         public static final int PLAYER_SIZE_WIDTH = 32;
         public static final int PLAYER_SIZE_HEIGHT = 32;

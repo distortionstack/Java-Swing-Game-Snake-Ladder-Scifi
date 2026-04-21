@@ -3,7 +3,9 @@ package com.distortionstack.snakeladder.include;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.net.URL;
 import javax.swing.ImageIcon;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -26,24 +28,33 @@ public class AssetManager {
 
     private void loadManifest(String xmlFileName, AssetReceiver target) {
         try {
-            InputStream is = null;
+            InputStream stream = null;
 
             // ท่าไม้ตาย: อ่านไฟล์ตรงๆ จากโฟลเดอร์ src เลย ไม่ง้อ IDE!
             File directFile = new File("src/main/resources/manifests/" + xmlFileName);
             if (directFile.exists()) {
-                is = new FileInputStream(directFile);
+                stream = new FileInputStream(directFile);
                 System.out.println("[AssetManager] ✅ load XML bypass IDE found: " + directFile.getAbsolutePath());
             } else {
                 // เผื่อฟลุคอยู่ใน Classpath
-                is = getClass().getClassLoader().getResourceAsStream("manifests/" + xmlFileName);
+                stream = getClass().getClassLoader().getResourceAsStream("manifests/" + xmlFileName);
             }
 
-            if (is == null) {
+            if (stream == null) {
                 System.err.println("[AssetManager] ❌ didn't find XML: " + xmlFileName);
                 return;
             }
 
+            try (InputStream is = stream) {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            dbf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbf.setXIncludeAware(false);
+            dbf.setExpandEntityReferences(false);
+
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document doc = db.parse(is);
             doc.getDocumentElement().normalize();
@@ -56,6 +67,7 @@ public class AssetManager {
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     parseElement((Element) node, namespace, "", target);
                 }
+            }
             }
         } catch (Exception e) {
             System.err.println("[AssetManager] ❌ Error loading manifest: " + xmlFileName);
@@ -83,6 +95,13 @@ public class AssetManager {
     } 
     else if (tagName.equals("sound")) {
         String fileName = el.getAttribute("file");
+        URL soundUrl = getClass().getClassLoader().getResource("assets/sounds/" + fileName);
+        if (soundUrl != null) {
+            target.receiveSound(fullKey, soundUrl.toExternalForm());
+            System.out.println("[AssetManager] ✅ Register Sound: " + fullKey);
+            return;
+        }
+
         File sFile = new File("src/main/resources/assets/sounds/" + fileName);
         String absolutePath = sFile.getAbsolutePath();
         target.receiveSound(fullKey, absolutePath);

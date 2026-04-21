@@ -44,7 +44,7 @@ public class OfflineLobbyPanel extends LobbyPanel {
         return startButton;
     }
 
-    public void EmptyPlayerAlert(){
+    public void showEmptyPlayerAlert() {
         JOptionPane.showMessageDialog( null, "You must choose at least one character","Warning" , JOptionPane.WARNING_MESSAGE);
     }
 }
