@@ -90,6 +90,12 @@ public abstract class GameLogicalManager {
         roll = 0;
     }
 
+    public void exitGame() {
+        playerList.clear();
+        currentTurnIndex = 0;
+        roll = 0;
+    }
+
     // ─────────────────────────────────────────────
     //  Getters
     // ─────────────────────────────────────────────

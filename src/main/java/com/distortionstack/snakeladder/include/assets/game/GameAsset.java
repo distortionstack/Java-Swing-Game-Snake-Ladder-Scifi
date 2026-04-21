@@ -40,6 +40,10 @@ public class GameAsset implements AssetReceiver {
     // ── Dice roll animation frames (1-6) ──
     public ImageIcon getDiceSheet(int face) { return mapImage.get("game.dice." + face); }
 
+    public ImageIcon getHomeButton() { return mapImage.get("game.home_button"); }
+
+     // ── Sound effects ──
+
     public void playPlayerMovedSound() {
         SoundHelper.playSound(mapSound.get("game.player_move.move" + ((int)(Math.random() * 6) + 1)));
     }

@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -57,14 +56,13 @@ public class MenuPanel extends JPanel {
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setOpaque(false); //
 
-        // 2. ตัวนี้แหละตัวการ! contentPanel ต้องโปร่งใส
         contentPanel = new JPanel(new BorderLayout(0, 20));
         contentPanel.setOpaque(false); // <--- เพิ่มบรรทัดนี้ลงไป
         contentPanel.add(titleLabel, BorderLayout.NORTH);
         contentPanel.add(menuBar, BorderLayout.CENTER);
 
         setLayout(new GridLayout(1, 3));
-        setBorder(BorderFactory.createEmptyBorder(80, 0, 80, 0)); //
+        setBorder(BorderFactory.createEmptyBorder(80, 0, 80, 0)); 
 
         add(new JPanel() {
             {

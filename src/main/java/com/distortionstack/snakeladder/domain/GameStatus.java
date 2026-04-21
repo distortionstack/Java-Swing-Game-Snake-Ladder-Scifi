@@ -6,15 +6,15 @@ import com.distortionstack.snakeladder.include.config.GameLogical;
 
 public class GameStatus implements Serializable {
     private static final long serialVersionUID = 10L;
-    private int index = GameLogical.START_INDEX; // เริ่มที่ index 0 (ตำแหน่งเริ่มต้น)
+    private int index = GameLogical.START_INDEX; 
     private boolean isWinner;
 
 
     void setIndex(int index) {
-        if (index < GameLogical.START_INDEX) index = GameLogical.START_INDEX; // ถ้าต่ำกว่า 0 ให้ค้างไว้ที่ 0
+        if (index < GameLogical.START_INDEX) index = GameLogical.START_INDEX;
         if (index > GameLogical.END_INDEX) {
-            index = GameLogical.END_INDEX; // ถ้าเกิน 100 ให้ค้างไว้ที่ 100
-            isWinner = true; // ประกาศผู้ชนะเมื่อถึง 100
+            index = GameLogical.END_INDEX; 
+            isWinner = true; 
         }
         this.index = index;
     }

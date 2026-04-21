@@ -3,6 +3,8 @@
 
         <image key="background" file="newmap.png"/>
 
+        <scaled key="home_button" file="but_home.png" width="84" height="87"/>
+
         <group key="player">
             <image key="blue"   file="player_blue.png"/>
             <image key="yellow" file="player_yellow.png"/>

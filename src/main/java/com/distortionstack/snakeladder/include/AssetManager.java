@@ -92,7 +92,17 @@ public class AssetManager {
             int h = Integer.parseInt(el.getAttribute("height"));
             target.receiveImage(fullKey, ImageHelper.cropImage(sheet, x, y, w, h));
         }
-    } 
+    }else if (tagName.equals("scaled")) {
+        ImageIcon img = loadImage(el.getAttribute("file"));
+        if (img != null) {
+            int w = Integer.parseInt(el.getAttribute("width"));
+            int h = Integer.parseInt(el.getAttribute("height"));
+            target.receiveImage(fullKey, ImageHelper.scaleImage(img, w, h));
+            System.out.println("[AssetManager] ✅ Register Scaled Image: " + fullKey);
+        }else {
+            System.err.println("[AssetManager] ❌ couldn't load image for scaling: " + el.getAttribute("file"));
+        }
+    }
     else if (tagName.equals("sound")) {
         String fileName = el.getAttribute("file");
         URL soundUrl = getClass().getClassLoader().getResource("assets/sounds/" + fileName);

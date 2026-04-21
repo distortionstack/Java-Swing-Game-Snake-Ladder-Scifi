@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
         LogConfig.initialize();
-        LOGGER.info("Starting Snake & Ladder Game...");
+        System.out.println("Starting Snake & Ladder Game...");
         new DisplayController();
     }
 }

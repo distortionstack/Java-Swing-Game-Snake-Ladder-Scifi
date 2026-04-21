@@ -30,6 +30,7 @@ public class GamePanel extends JPanel {
     protected DiceAnimation diceRollAnimation; // เปลี่ยนชื่อคลาสให้ตรงกัน
 
     protected JButton diceButton;
+    protected JButton homeButton;
     protected ImageIcon bgImageIcon;
     protected Point[] onePlayerPoint = new Point[GameLogical.INDEX_AMOUNT];
     protected JLabel[] upJLabels = new JLabel[GameLogical.LADDERS_UP.length];
@@ -56,6 +57,16 @@ public class GamePanel extends JPanel {
             }
         };
 
+        homeButton = new JButton() {
+            {
+                setBounds(new Rectangle(GameUI.HOME_BUTTON_POINT, GameUI.HOME_BUTTON_DIMENSION));
+                setIcon(assetManager.getGameAsset().getHomeButton());
+                setContentAreaFilled(false);
+                setBorderPainted(false);
+                setFocusPainted(false);
+            }
+        };
+
         for (int i = 0; i < upJLabels.length; i++)
             upJLabels[i] = new JLabel(assetManager.getGameAsset().getArrowUp());
 
@@ -66,6 +77,7 @@ public class GamePanel extends JPanel {
         setPreferredSize(DisplayUI.WINDOW_SIZE);
         positionSetUp();
         add(diceButton);
+        add(homeButton);
 
         // Dice animation overlay
         diceRollAnimation = new DiceAnimation(this);
@@ -89,6 +101,10 @@ public class GamePanel extends JPanel {
 
     public void addDiceButtonListener(ActionListener listener) {
         diceButton.addActionListener(listener);
+    }
+
+    public void addHomeButtonListener(ActionListener listener) {
+        homeButton.addActionListener(listener);
     }
 
     public void onDiceRoll() {

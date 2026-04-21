@@ -1,6 +1,7 @@
 package com.distortionstack.snakeladder.ui.offline;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import com.distortionstack.snakeladder.domain.PlayerData;
@@ -41,6 +42,8 @@ public class OfflineModeCoordinator {
             button.addActionListener(e -> onSkinSelected(button));
         }
         offlineGamePanel.addDiceButtonListener(e -> onDiceRolled());
+
+        offlineGamePanel.addHomeButtonListener(e -> onGameExit());
     }
 
     // ─────────────────────────────────────────────
@@ -125,6 +128,14 @@ public class OfflineModeCoordinator {
         offlineGamePanel.getAssetManager().getGameAsset().playGameFinishedSound();
         if (winnerSkinCode != null) {
             displayController.showFinishScreen(winnerSkinCode);
+        }
+    }
+
+    private void onGameExit() {
+        int result = offlineGamePanel.showGameExitAlert();
+        if (JOptionPane.OK_OPTION == result) {
+            offlineLogic.exitGame();
+            displayController.showMenu();
         }
     }
 

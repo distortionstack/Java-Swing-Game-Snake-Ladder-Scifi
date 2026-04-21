@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import java.util.List;
 
@@ -160,6 +161,10 @@ public class OfflineGamePanel extends GamePanel {
         int visualIndex;
         
         // เอาไว้เก็บพิกัด หรือข้อมูลอนิเมชันเพิ่มในอนาคตได้ตรงนี้
+    }
+
+    public int showGameExitAlert(){
+        return JOptionPane.showConfirmDialog( null, "Do you want to exit the game?" ,"Confirm Exit", JOptionPane.OK_CANCEL_OPTION);
     }
 
 }
